@@ -1,0 +1,128 @@
+\documentclass[12pt]{report}
+
+\title{De-ossifying Internet Transport: a case for NEAT}
+\author{
+	Helena Gummedal
+}
+
+\begin{document}
+
+\maketitle
+
+% should set the pages before the table of contents to roman numbers
+\chapter*{Acknowledgments}%
+%\addcontentsline{toc}{chapter}{\numberline{}Acknowledgments}%
+% if you have each of the chapters in it own file, use input to put it in here (under each chapter)
+Thanks to people that have helped with the thesis.
+
+\chapter*{Abstract}%
+%\addcontentsline{toc}{chapter}{\numberline{}Abstract}%
+Summary of the thesis.
+
+\tableofcontents
+
+\chapter{Introduction}
+General information about socket programming, transport protocols and NEAT. How history has evolved - or not evolved. This will then lead us to the purpose of the thesis which will be described along with the objectives of it (which will most likely be in its own section/ under chapter). This chapter may also include work methods, tools, thesis structure and motivation (may then be in their own sections).
+
+\section{Objectives/ Problem statement}
+What is the purpose of the thesis? Replicate the results of tests carried out by a previous master thesis, then optimize the NEAT code (replace json handling since it is the reason for the high overhead - from master thesis) and test NEAT again and hopefully an improvement in the CPU overhead will be seen. Often a question is asked that will be answered in the conclusion. Some possible questions: 
+\begin{itemize}
+\item What improvements can be made to NEAT?
+\item Is it possible to make improvements to neat to make it "competitive" to the socket programming today?
+\item Why NEAT?
+\item Were we able to solve the problem of the high overhead that NEAT suffers from? How?
+\end{itemize}
+
+\section{Research Questions}
+What is to be researched? How to improve NEAT? Json handling --> bit mask?
+\begin{itemize}
+\item Can NEAT be optimized by replacing json handling?
+\end{itemize}
+
+\section{Contributions}
+What have I contributed.
+
+\section{Research Methodology}
+How are the experiments run; which will probably be the same way that was done in the master thesis with teacup since it is to be replicated. Then after improvements are made by NEAT, the same experiments will be carried out again. Mention that 
+
+\chapter{Background}
+
+
+Introduce all the relevant theory for this thesis. This may include:
+\begin{itemize}
+\item How the network works (different layers; focus on the transport layer)
+\item Transport protocols
+\item NEAT API
+\item How to use NEAT and why. Example of how its used.
+\item The de-ossifying of the internet transport - why neat
+\item Socket programming (BSD sockets)
+\item Libuv API
+\item netwok.framwork - apple --> comparable to NEAT (this and the two below)
+\item postsockets
+\item taps 
+\item Linux - operating system which is used . mentioned in methodology
+\item Raspberry pi
+\item Virtualbox
+\item Tools / methods used for the measurement of CPU time and memory usage (and about what this is and what "types" there is) - valgrind (massif, callgrind), ...
+\item And other relevant information (see after experiments)
+\end{itemize}
+
+Mention that this thesis is based on a previous published master thesis (this may also just be mentioned in the introduction; depends on the amount of information that will be included). \\
+Some of these topics may be better other places.
+
+\section{Literature review / state of the art}
+Research problem: how can NEAT be improved? Json handling? Can the overhead of NEAT be improved by substituting the json handling? With bit mask?
+\begin{itemize}
+\item How network programming and the internet transports protocols work
+\item More protocols that aren’t really used. NEAT solve this
+\item NEAT - what is it, who developed it, what are the mechanisms, what is NEAT built on
+\item Master thesis has evaluated NEAT to see if it can compete with the already established ways of networking programming (epoll (not evaluated since the experiments were done on freebsd), kqueue, libuv). Build on the results of this thesis and try to replicate their results (or just see if they are the same). This thesis will be on linux and not freebsd though. From this master thesis it was concluded that the overhead was large compared to the other available methods and this would need improvement. The json handling used a lot of overhead and there should therefore be looked for a different solution for this problem. Bit mask?
+\end{itemize}
+This may also be a section in the introduction. Mention when, and why neat was created an by who - general information in that regard. Mention the master thesis and what the purpose of that thesis was. Also what it acheived (its results) \\
+\\
+TCP and UDP has for many years been the only used transport protocols. Recently more protocols has been established to handle functions that neither TCP or UDP support fully. Such protocols are SCTP (multistreaming), UDP-lite (...) and …. However, largely due to the inflexibility of the BSD sockets, these transport protocols are rarely used. The NEAT library want to change this situation. It is a callback library developed by ... in ...It uses the happy eyeballs mechanism (source - mention these sources and previous research into it?) which has been suggested before as a solution to this problem. It also uses libuv as an event library. Instead of the current way networking APIs work where a transport protocol is necessary for the establishment of the connection, NEAT wants instead to offer network services such as reliability, multistreaming. The by the use of the happy eyeballs mechanism determined the most suitable protocol. This way the NEAT project wants to then \textit{achieve a complete redesign of the way in which Internet applications interact with the network}. 
+\\ \\
+Mention libuv, kqueue in greater detail? \\ \\
+This thesis will be built on the evaluations and findings of an earlier master thesis written at UiO (source). From these results the goal is to improve and optimize the NEAT library. This master thesis goal was the evaluation of the NEAT library by comparing it to other networking APIs. Comparison of CPU time and the memory usage was the focus of the thesis which was done through several experiments on FreeBSD with teaCup. \\
+\\
+A master's thesis, Performance Evaluation of NEAT Internet Transport Layer API and Library by Fredrik Haugseth, written at UiO has conducted research that compared the NEAT library to other networking APIs such as libuv and kqueue. The thesis focused on the memory overhead and it concluded that optimization was in need for NEAT to be in league with the other networking APIs. A quite higher CPU overhead was largely contributed to the use of json; which was a lot. 
+
+\section{BSD sockets}
+General information.
+
+\section{NEAT}
+API, how it works and why use it.
+
+\section{Libuv API}
+
+\section{Network.framework}
+
+\section{Post sockets}
+
+\section{Taps IEFT}
+
+\chapter{Experimental}
+What are the experiments that will be carried out? Explain what is needed and what has been done. Possbible sections: setup, test cases, teacup, ... \\
+\\
+Should also mention what improvements have been done to the NEAT code and what the purpose behind the changes is and then see if they have the desired effect.
+
+\chapter{Evaluation/ Results}
+Evaluate what has been found in the experiments carried out in the lab. Did we find the same results that the previous master thesis found? If our results differ, in what way? Are our set up different (the previous master thesis mentioned the json handling used a lot of space, have we solved this?)
+
+\chapter{Conclusion/ Discussion}
+The results of the thesis. May be discussed as well or just a summary of what we found out.
+
+\chapter{Further work}
+Is there anything further that can be done that we figured out could be done? Not necessary if we don't find anything. This may also be a section under the conclusion/ discussion.
+
+\chapter{References}
+All the references used - endnote does not work with latex but can be imported into bibTex which is a reference tool that works with latex.\\
+\\
+This should also include list of figures, tables and such (this may also be in the beginning of the thesis).
+
+\appendix
+\chapter{Appendix title}
+Any "extra" information.
+
+
+\end{document}
