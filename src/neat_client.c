@@ -58,6 +58,9 @@ struct client_ctx {
  * General globals
  */
 
+// for the calculation of cpu time
+//static struct timespec before_connected, after_connected, connected_cpu_time;
+
 // Will be set to 0 after the first time on_readable is called
 static int first_read = 1;
 
@@ -118,6 +121,9 @@ static neat_error_code on_all_written_http(struct neat_flow_operations *opCB);
 static neat_error_code on_readable_http(struct neat_flow_operations *opCB);
 static neat_error_code on_readable_http_get(struct neat_flow_operations *opCB);
 static neat_error_code on_connected(struct neat_flow_operations *opCB);
+
+//static void log_cpu_time();
+//static void sample_memory_usage(long int my_pid, char* name);
 
 static void
 print_usage(void)
@@ -237,7 +243,7 @@ on_close(struct neat_flow_operations *opCB)
 	client_ctx = opCB->userData;
 	user_log(LOG_LEVEL_INFO, "Client %d: Disconnected\n", client_ctx->id);
 	clients_closed++;
-	sample("afterallclosed", clients_closed == config_number_of_requests);
+	//sample("afterallclosed", clients_closed == config_number_of_requests);
 	
 	if (client_ctx->receive_buffer) {
 	    free(client_ctx->receive_buffer);
@@ -272,7 +278,7 @@ on_writable_http(struct neat_flow_operations *opCB)
     int send_size;
 
     if (!has_written) {
-	sample("beforefirstwrite", 1);
+	//sample("beforefirstwrite", 1);
 	has_written = 1;
     }
 
@@ -335,7 +341,7 @@ on_all_written_http(struct neat_flow_operations *opCB)
     if (client_ctx->http_request_sent) {
 	user_log(LOG_LEVEL_INFO, "Client %d: Sent HTTP request\n", client_ctx->id);
 	clients_completed_writing++;
-	sample("afterallwritten", clients_completed_writing == config_expected_completing);
+	//sample("afterallwritten", clients_completed_writing == config_expected_completing);
 	if (config_run_mode == RUN_MODE_HTTP_POST) {
 	    opCB->on_writable = NULL;
 	    opCB->on_all_written = NULL;
@@ -360,7 +366,7 @@ on_readable_http(struct neat_flow_operations *opCB)
     uint32_t actual;
 
     if (!has_read) {
-	sample("beforefirstread", 1);
+	//sample("beforefirstread", 1);
 	has_read = 1;
     }
 
@@ -421,7 +427,7 @@ on_readable_http(struct neat_flow_operations *opCB)
 	if ((client_ctx->pret + request_length) == actual) {
 	    user_log(LOG_LEVEL_INFO, "Client %d: Received all data from HTTP response\n", client_ctx->id);
 	    clients_completed++;
-	    sample("afterallread", clients_completed == config_expected_completing);
+	    //sample("afterallread", clients_completed == config_expected_completing);
 	    opCB->on_writable = NULL;
 	} else {
 	    client_ctx->http_file_size = request_length;
@@ -490,7 +496,7 @@ on_readable_http_get(struct neat_flow_operations *opCB)
 	if (client_ctx->http_file_offset == client_ctx->http_file_size) {
 	    clients_completed++;
 	    user_log(LOG_LEVEL_INFO, "Client %d: Received all data from HTTP response\n", client_ctx->id);
-	    sample("afterallread", clients_completed == config_expected_completing);
+	    //sample("afterallread", clients_completed == config_expected_completing);
 	}
     } else {
 	user_log(LOG_LEVEL_DEBUG, "Client %d: Read 0 bytes - end of file\n", client_ctx->id);
@@ -515,15 +521,28 @@ on_connected(struct neat_flow_operations *opCB)
     /*
      * Sample the time when the flow has established a connection.
      */
-    if (get_time(&(client_ctx->after_connected)) == -1) {
+    /*if (get_time(&(client_ctx->after_connected)) == -1) {
 	user_log(LOG_LEVEL_ERROR, "Client %d: Failed to sample time data\n", clients_connected + 1);
 	goto error;
-    }
+    }*/
 
     clients_connected++;
     sample("firstconnect", clients_connected == 1);
+    /*if (clients_connected == 1)
+    {
+        long int my_pid = (long int)getpid();
+        sample_memory_usage(my_pid, "before_connected");
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &before_connected);
+    }*/
     sample("afterallconnected", clients_connected == config_number_of_requests);
-    sample("afterhalfconnected", clients_connected == (config_number_of_requests / 2));
+    /*if (clients_connected == config_number_of_requests)
+    {
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &after_connected);
+        long int my_pid = (long int)getpid();
+        sample_memory_usage(my_pid, "after_connected");
+        log_cpu_time();
+    }*/
+    //sample("afterhalfconnected", clients_connected == (config_number_of_requests / 2));
     client_ctx->id = clients_connected;
     user_log(LOG_LEVEL_INFO, "Client %d: Connected\n", client_ctx->id);
     
@@ -670,6 +689,45 @@ print_statistics(uv_timer_t *handle)
     uv_timer_start(handle, print_statistics,
 		   1000 * config_statistics_log_rate, 0);
 }
+
+/*static void log_cpu_time()
+{
+    time_t t = time(NULL); 
+    struct tm tm = *localtime(&t); 
+    FILE * fp;
+    char command_string[1000];
+    long int my_pid = (long int)getpid();
+
+
+    fp = fopen("log_cpu_time.txt", "a");
+
+    fprintf(fp, "Date: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1,
+        tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+    fprintf(fp, "on_connected():\n");
+    fprintf(fp, "Before connected: %9ld ns\n", (long)before_connected.tv_nsec);
+    fprintf(fp, "After connected:  %9ld ns\n", (long)after_connected.tv_nsec);
+    connected_cpu_time.tv_nsec = after_connected.tv_nsec - before_connected.tv_nsec;
+    fprintf(fp, "CPU time exactly: %ld ns\n", (long)connected_cpu_time.tv_nsec);
+    connected_cpu_time.tv_nsec *= 0.000001;
+    fprintf(fp, "CPU time (rounded down): %ld ms\n\n", (long)connected_cpu_time.tv_nsec);
+
+    fclose(fp);
+}*/
+
+// for sampling of memory overhead 
+/*void sample_memory_usage(long int my_pid, char* name)
+{
+    char command_string[1000];
+
+    sprintf(command_string, "echo '%s' >> rss.log &", name);
+    system(command_string);
+
+    sprintf(command_string, "ps -o rss -p %ld >> rss.log &", my_pid);
+    system(command_string);
+
+    return;
+}*/
 
 int
 main(int argc, char *argv[])
@@ -960,7 +1018,7 @@ main(int argc, char *argv[])
     /*
      * Sample current time + more before for-loop
      */
-    sample("beforeforloop", 1);
+    //sample("beforeforloop", 1);
 
     for (int i = 0; i < config_number_of_requests; i++) {
 	struct client_ctx *client_ctx = (client_contexts + i);
@@ -997,11 +1055,19 @@ main(int argc, char *argv[])
 
 	user_log(LOG_LEVEL_INFO, "Opening connection to %s (%d)...\n", remote_hostname, i + 1);
 
-	if (get_time(&(client_ctx->before_connected)) == -1) {
+	/*if (get_time(&(client_ctx->before_connected)) == -1) {
 	    user_log(LOG_LEVEL_ERROR, "%s: Failed to sample time data for flow\n", __func__);
 	    error = 1;
 	    goto cleanup;
-	}
+	}*/
+
+    //sample("firstconnect", clients_connected == 0);
+    /*if (clients_connected == 0)
+    {
+        long int my_pid = (long int)getpid();
+        sample_memory_usage(my_pid, "before_connected");
+        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &before_connected);
+    }*/
 	
  	if (neat_open(ctx, flows[i], remote_hostname, remote_port, NULL, 0) != NEAT_OK) {
 	    user_log(LOG_LEVEL_ERROR, "%s: neat_open error\n", __func__);
@@ -1013,7 +1079,7 @@ main(int argc, char *argv[])
     /*
      * Sample current time + more after for-loop
      */
-    sample("afterforloop", 1);
+    //sample("afterforloop", 1);
 
 start_loop:
 
@@ -1057,10 +1123,10 @@ start_loop:
     }
 
     user_log(LOG_LEVEL_INFO, "Starting event loop...\n");
-    sample("beforeloop", 1);
+    //sample("beforeloop", 1);
     neat_start_event_loop(ctx, NEAT_RUN_DEFAULT);
     left_event_loop = 1;
-    sample("afterloop", 1);
+    //sample("afterloop", 1);
     user_log(LOG_LEVEL_INFO, "Left the event loop.\n");
 
     /*
@@ -1135,7 +1201,7 @@ cleanup:
         neat_free_ctx(ctx);
     }
 
-    sample("end", 1);
+    //sample("end", 1);
 
     if (signal_intr) {
 	free(signal_intr);

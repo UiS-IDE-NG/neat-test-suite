@@ -105,7 +105,8 @@ sample_cpu_time(clockid_t clock_id, char *prefix, char *where, char *name, char 
 	    perror("clock_gettime");
 	    result = -1;
 	} else {
-	    fprintf(results_file, "%ld %ld\n", ts.tv_sec, ts.tv_nsec);
+	    //fprintf(results_file, "%ld %ld\n", ts.tv_sec, ts.tv_nsec);
+        fprintf(results_file, "%ld\n", ts.tv_nsec);
 	}
     }
 
@@ -120,9 +121,16 @@ int
 sample_usage_data(char *prefix, char *where, char *results_dir)
 {
 #if defined(__linux__)
-    fprintf(stderr, "Sampling not implemented for Linux yet...\n");
-    fprintf(stderr, "prefix: %s\n", prefix);
-    fprintf(stderr, "where: %s\n", where);
+    int error = 0;
+    long int my_pid = (long int)getpid();
+    char command_string[1000];
+
+    // CPU time
+    error = error | sample_cpu_time(CLOCK_PROCESS_CPUTIME_ID, prefix, where, "cpu_application", results_dir);
+
+    // current application RSS memory usage.
+    snprintf(command_string, sizeof (command_string), "ps -o rss -p %ld >> %s/%s_%s_memory_application.log &", my_pid, results_dir, prefix, where);
+    system(command_string); 
 #endif
 #if defined(__FreeBSD__)
     int error = 0;
