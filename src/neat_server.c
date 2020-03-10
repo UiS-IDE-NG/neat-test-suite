@@ -182,7 +182,7 @@ on_close(struct neat_flow_operations *opCB)
 	client_ctx = opCB->userData;
 	user_log(LOG_LEVEL_INFO, "Client %d: Disconnected\n", client_ctx->id);
 	clients_closed++;
-	sample("afterallclosed", clients_closed == config_expected_connecting);
+	//sample("afterallclosed", clients_closed == config_expected_connecting);
 
 	if (client_ctx->receive_buffer) {
 	    free(client_ctx->receive_buffer);
@@ -221,7 +221,7 @@ on_readable_http(struct neat_flow_operations *opCB)
     uint32_t actual;
 
     if (!has_read) {
-	sample("beforefirstread", 1);
+	//sample("beforefirstread", 1);
 	has_read = 1;
     }
 
@@ -274,7 +274,7 @@ on_readable_http(struct neat_flow_operations *opCB)
 	if (strncmp(client_ctx->method, "GET", client_ctx->method_len) == 0) {
 	    user_log(LOG_LEVEL_INFO, "Client %d: Received HTTP GET request for %d bytes\n", client_ctx->id, request_length);
 	    clients_completed_reading++;
-	    sample("afterallread", clients_completed_reading == config_expected_completing);
+	    //sample("afterallread", clients_completed_reading == config_expected_completing);
 	    if (prepare_http_response(client_ctx->headers, client_ctx->num_headers, client_ctx->path, client_ctx->path_len, &client_ctx->http_response_header, &client_ctx->http_response_header_size, &client_ctx->http_file_size, &client_ctx->keep_alive) < 0) {
 		user_log(LOG_LEVEL_ERROR, "Client %d: Failed to create HTTP response to GET request\n", client_ctx->id);
 		goto error;
@@ -287,7 +287,7 @@ on_readable_http(struct neat_flow_operations *opCB)
 	    if ((client_ctx->pret + request_length) == actual) {
 		user_log(LOG_LEVEL_INFO, "Client %d: Received all data from POST request\n", client_ctx->id);
 		clients_completed++;
-		sample("afterallread", clients_completed == config_expected_completing);
+		//sample("afterallread", clients_completed == config_expected_completing);
 		opCB->on_writable = NULL;
 		opCB->on_readable = NULL;
 	    } else {
@@ -361,7 +361,7 @@ on_readable_http_post(struct neat_flow_operations *opCB)
 	client_ctx->http_file_offset += actual;
 	if (client_ctx->http_file_offset == client_ctx->http_file_size) {
 	    clients_completed++;
-	    sample("afterallread", clients_completed == config_expected_completing);
+	    //sample("afterallread", clients_completed == config_expected_completing);
 	    user_log(LOG_LEVEL_INFO, "Client %d: Received all data from POST request\n", client_ctx->id);
 	}
     } else {
@@ -387,7 +387,7 @@ on_writable_http(struct neat_flow_operations *opCB)
     int send_size;
 
     if (!has_written) {
-	sample("beforefirstwrite", 1);
+	//sample("beforefirstwrite", 1);
 	has_written = 1;
     }
 
@@ -460,7 +460,7 @@ on_all_written_http(struct neat_flow_operations *opCB)
     if (client_ctx->http_file_sent) {
 	user_log(LOG_LEVEL_INFO, "Client %d: Sent HTTP response\n", client_ctx->id);
 	clients_completed++;
-	sample("afterallwritten", clients_completed == config_expected_completing);
+	//sample("afterallwritten", clients_completed == config_expected_completing);
 	opCB->on_writable = NULL;
 	opCB->on_all_written = NULL;
 	user_log(LOG_LEVEL_INFO, "Client %d: Closing...\n", client_ctx->id);
@@ -555,7 +555,7 @@ print_statistics(uv_timer_t *handle)
     char val[10];
     
     snprintf(val, sizeof (val), "sample:%d", statistics_count);
-    sample(val, 1);
+    //sample(val, 1);
 
     statistics_count++;
     uv_timer_start(handle, print_statistics,
@@ -756,7 +756,7 @@ main(int argc, char *argv[])
 	system(command_string);
     }
 
-    sample("beforestart", 1);
+    //sample("beforestart", 1);
     sample("start", 1);
 
     /*
@@ -767,6 +767,7 @@ main(int argc, char *argv[])
      */
     user_log(LOG_LEVEL_DEBUG, "Initializing NEAT context...\n");
     
+    is_client = 0;
     if ((ctx = neat_init_ctx()) == NULL) {
 	user_log(LOG_LEVEL_ERROR, "%s: neat_init_ctx failed\n", __func__);
 	error = 1;
@@ -787,6 +788,7 @@ main(int argc, char *argv[])
 
     user_log(LOG_LEVEL_DEBUG, "Creating NEAT flow for listening...\n");
     
+    is_client = 0;
     if ((flow = neat_new_flow(ctx)) == NULL) {
 	user_log(LOG_LEVEL_ERROR, "%s: neat_new_flow failed\n", __func__);
 	error = 1;
@@ -795,6 +797,7 @@ main(int argc, char *argv[])
 
     user_log(LOG_LEVEL_DEBUG, "Setting NEAT properties...\n");
     
+    is_client = 0;
     if (neat_set_property(ctx, flow, config_read_properties_set ? config_read_properties : config_properties)) {
 	user_log(LOG_LEVEL_ERROR, "%s: neat_set_property failed\n", __func__);
         error = 1;
@@ -878,9 +881,9 @@ main(int argc, char *argv[])
     }
 
     user_log(LOG_LEVEL_INFO, "Starting event loop...\n");
-    sample("beforeloop", 1);
+    //sample("beforeloop", 1);
     neat_start_event_loop(ctx, NEAT_RUN_DEFAULT);
-    sample("afterloop", 1);
+    //sample("afterloop", 1);
     program_ended = 1;
     user_log(LOG_LEVEL_INFO, "Left the event loop.\n");
 
@@ -911,7 +914,7 @@ cleanup:
 	neat_free_ctx(ctx);
     }
 
-    sample("end", 1);
+    //sample("end", 1);
 
     if (signal_intr) {
 	free(signal_intr);
