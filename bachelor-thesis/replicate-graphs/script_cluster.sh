@@ -93,8 +93,7 @@ add_jsondata_in_new_file() {
 	#cpu_time=0	
 
 	for file in ${files}; do
-		#echo ${file}
-		filename=$(echo ${file:48})
+		filename=$(echo ${file:41})
 		if [[ ! -f ${1}/"${2}_${filename}" ]]; then
 			> ${1}/"${2}_${filename}"
 		fi
