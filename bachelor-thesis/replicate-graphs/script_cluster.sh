@@ -222,15 +222,15 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do
 			echo "number of flow(s) ${flows[i]}, test $((j + 1))..."
 			# -R "${directories[k+1]}" -A -s 		"${counter}"
-			
-			ssh ${server} ./neat_server -C "$((transport[2] * flows[i]))" -a "${a}" -b "${b}" \
-				-M "${transport[k]}" -I "10.0.0.3" -p "${port}" -v "${log_level}" \
+			#-I "10.0.0.3"
+			ssh ${server} cd /neat-test-suite/build; ./neat_server -C "$((transport[2] * flows[i]))" -a "${a}" -b "${b}" \
+				-M "${transport[k]}" -p "${port}" -v "${log_level}" \
 				>/dev/null 2>&1 & #&>>/home/helena/Documents/neat-test-suite/build/output_server.txt 2>&1 & #>/dev/null 2>&1 & #
 
 			sleep 1 # not sure if this is necessary
-
-			ssh ${client} ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
-				-M "${transport[k]}" -i "10.0.0.2" -n "${flows[i]}" -v "${log_level}" "${host}" \
+			# -i "10.0.0.2"
+			ssh ${client} cd /neat-test-suite/build; ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
+				-M "${transport[k]}" -n "${flows[i]}" -v "${log_level}" "${host}" \
 				"${port}" "${counter}" &>/dev/null & #&>>/home/helena/Documents/neat-test-suite/build/output_client.txt & #&>/dev/null & #
 
 			#wait before the programs are killed 
@@ -248,8 +248,8 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 				sleep 10m
 			fi
 
-			ssh pi4host2 killall ./neat_server
-			ssh pi4host3 killall ./neat_client
+			ssh pi4host2 cd /neat-test-suite/build; killall ./neat_server
+			ssh pi4host3 cd /neat-test-suite/build; killall ./neat_client
 			
 			echo "Add jsondata together and relocate it to a new file..."
 			add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
