@@ -990,8 +990,6 @@ main(int argc, char *argv[])
  	    goto cleanup;
  	}
 
-    counter++;
-
  	ops[i].userData = client_ctx;
  	ops[i].on_connected = on_connected;
 	ops[i].on_aborted = on_aborted;
