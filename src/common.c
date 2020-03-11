@@ -87,3 +87,5 @@ long total_bytes_read = 0;
 long total_bytes_sent = 0;
 int has_written = 0;
 int has_read = 0;
+
+int is_client = 0;

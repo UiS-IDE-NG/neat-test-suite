@@ -274,8 +274,18 @@ int
 get_time(struct timespec *ts)
 {
 #if defined(__linux__)
-    fprintf(stderr, "Attempted to sample data, but sampling is not supported in Linux yet.\n");
-    return 1;
+    if (ts == NULL) {
+    fprintf(stderr, "get_time - Got NULL pointer!\n");
+    set_error_time(1);
+    return -1;
+    }
+
+    if (clock_gettime(CLOCK_MONOTONIC, ts) == -1) {
+    perror("clock_gettime");
+    set_error_time(1);
+    return -1;
+    }
+return 1;
 #endif
 #if defined(__FreeBSD__)
     if (ts == NULL) {

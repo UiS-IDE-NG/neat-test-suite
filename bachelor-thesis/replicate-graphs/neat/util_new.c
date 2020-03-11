@@ -130,8 +130,7 @@ sample_usage_data(char *prefix, char *where, char *results_dir)
 
     // current application RSS memory usage.
     snprintf(command_string, sizeof (command_string), "ps -o rss -p %ld >> %s/%s_%s_memory_application.log &", my_pid, results_dir, prefix, where);
-    //system(command_string); 
-
+    system(command_string); 
 
     return error;
 #endif

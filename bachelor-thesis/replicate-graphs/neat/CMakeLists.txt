@@ -43,6 +43,7 @@ LIST(APPEND neat_headers
     neat_queue.h
 	util_new.h
 	common.h
+	sample_cpu.h
 )
 
 LIST(APPEND neat_sources

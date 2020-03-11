@@ -137,7 +137,7 @@ neat_init_ctx()
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     nc = calloc(1, sizeof(struct neat_ctx));    
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     
 
     if (!nc) {
@@ -146,7 +146,7 @@ neat_init_ctx()
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     nc->loop = calloc(1, sizeof(uv_loop_t));    
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     
     nc->pvd = NULL;
 
@@ -833,7 +833,7 @@ neat_set_property(neat_ctx *ctx, neat_flow *flow, const char *properties)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid2 = (long int)getpid();
         //sample_memory_usage(my_pid2, "jsonloads_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonloads.log", &start_t, &end_t, &diff_t);      
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonloads.log", &start_t, &end_t, &diff_t);      
         
         //sample("jsonloads_after", 1);
         if (props == NULL) {
@@ -854,7 +854,7 @@ neat_set_property(neat_ctx *ctx, neat_flow *flow, const char *properties)
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
                 //long int my_pid4 = (long int)getpid();
                 //sample_memory_usage(my_pid4, "jsonobjectget_after", ctx);
-                log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
+                log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
                 
                 assert(val);
                 if (json_typeof(val) == JSON_STRING) {     
@@ -877,7 +877,7 @@ neat_set_property(neat_ctx *ctx, neat_flow *flow, const char *properties)
             clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
             //long int my_pid6 = (long int)getpid();
             //sample_memory_usage(my_pid6, "jsonobjectset_after", ctx);
-            log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+            log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
             //sample("jsonobjectset_after", 1);
         }
         //sample("jsondecref_before", 1);
@@ -888,7 +888,7 @@ neat_set_property(neat_ctx *ctx, neat_flow *flow, const char *properties)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid8 = (long int)getpid();
         //sample_memory_usage(my_pid8, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
 
     } else {
@@ -2106,7 +2106,7 @@ send_result_connection_attempt_to_pm(neat_ctx *ctx, neat_flow *flow, struct cib_
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid2 = (long int)getpid();
     //sample_memory_usage(my_pid2, "jsonpack_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
     //sample("jsonpack_after", 1);
     
     if (prop_obj == NULL) {
@@ -2128,7 +2128,7 @@ send_result_connection_attempt_to_pm(neat_ctx *ctx, neat_flow *flow, struct cib_
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid4 = (long int)getpid();
     //sample_memory_usage(my_pid4, "jsonpack_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
     //sample("jsonpack_after", 1);
     
     if (result_obj == NULL) {
@@ -2145,7 +2145,7 @@ send_result_connection_attempt_to_pm(neat_ctx *ctx, neat_flow *flow, struct cib_
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid6 = (long int)getpid();
     //sample_memory_usage(my_pid6, "jsonobjectset_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
     //sample("jsonobjectset_after", 1);
 
     result_array = json_array();    
@@ -2173,7 +2173,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid8 = (long int)getpid();
         //sample_memory_usage(my_pid8, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);    
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);    
         //sample("jsondecref_after", 1);
     }
 
@@ -2186,7 +2186,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid10 = (long int)getpid();
         //sample_memory_usage(my_pid10, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
     }
 
@@ -2199,7 +2199,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid12 = (long int)getpid();
         //sample_memory_usage(my_pid12, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t); 
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t); 
         //sample("jsondecref_after", 1);
     }
 }
@@ -2289,7 +2289,7 @@ he_connected_cb(uv_poll_t *handle, int status, int events)
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     he_res = calloc(1, sizeof(struct cib_he_res));  
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     
     if (!he_res)
         return;
@@ -3433,7 +3433,7 @@ on_candidates_resolved(neat_ctx *ctx, neat_flow *flow, struct neat_he_candidates
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid2 = (long int)getpid();
     //sample_memory_usage(my_pid2, "jsondecref_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
     //sample("jsondecref_after", 1);
 #endif
 }
@@ -3677,7 +3677,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     candidates = calloc(1, sizeof(*candidates));    
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     
 
     if (!candidates) {
@@ -3713,7 +3713,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
         //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid2 = (long int)getpid();
         //sample_memory_usage(my_pid2, "getnameinfo_after", ctx);
-        //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_getnameinfo.log", &start_t, &end_t, &diff_t);      
+        //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_getnameinfo.log", &start_t, &end_t, &diff_t);      
         //sample("getnameinfo_after", 1);
 
         if (rc != 0) {
@@ -3731,7 +3731,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
         //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid4 = (long int)getpid();
         //sample_memory_usage(my_pid4, "getnameinfo_after", ctx);
-        //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_getnameinfo.log", &start_t, &end_t, &diff_t);
+        //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_getnameinfo.log", &start_t, &end_t, &diff_t);
         //sample("getnameinfo_after", 1);
 
         if (rc != 0) {
@@ -3750,7 +3750,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
             //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
             struct neat_he_candidate *candidate = calloc(1, sizeof(*candidate));    
             //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-            //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+            //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     
             if (!candidate) {
                 nt_free_candidates(ctx, candidates);
@@ -3760,7 +3760,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
             //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
             candidate->pollable_socket = calloc(1, sizeof(struct neat_pollable_socket));    
             //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-            //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+            //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     
             if (!candidate->pollable_socket) {
                 free(candidate);
@@ -3828,7 +3828,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
                     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
                     //long int my_pid6 = (long int)getpid();
                     //sample_memory_usage(my_pid6, "jsonobjectget_after", ctx);
-                    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
+                    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
                 
                     //sample("jsondumps_before", 1);
                     //long int my_pid7 = (long int)getpid();
@@ -3838,7 +3838,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
                     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
                     //long int my_pid8 = (long int)getpid();
                     //sample_memory_usage(my_pid8, "jsondumps_after", ctx);
-                    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);
+                    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);
                     //sample("jsondumps_after", 1);
 
                     // Remove quotes
@@ -3865,7 +3865,7 @@ open_resolve_cb(struct neat_resolver_results *results, uint8_t code,
                     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
                     //long int my_pid10 = (long int)getpid();
                     //sample_memory_usage(my_pid10, "jsondecref_after", ctx);
-                    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+                    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
                     //sample("jsondecref_after", 1);
 
                     free(candidate->pollable_socket->dst_address);
@@ -4152,7 +4152,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid2 = (long int)getpid();
         //sample_memory_usage(my_pid2, "getnameinfo_after", ctx);
-        //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_getnameinfo.log", &start_t, &end_t, &diff_t);      
+        //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_getnameinfo.log", &start_t, &end_t, &diff_t);      
         //sample("getnameinfo_after", 1);
         
         if (rc != 0) {
@@ -4182,7 +4182,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
                 //long int my_pid16 = (long int)getpid();
                 //sample_memory_usage(my_pid16, "jsonobjectget_after", ctx);
-                log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
+                log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
                 
                 //sample("jsondumps_before", 1);
                 //long int my_pid3 = (long int)getpid();
@@ -4192,7 +4192,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
                 //long int my_pid4 = (long int)getpid();
                 //sample_memory_usage(my_pid4, "jsondumps_after", ctx); 
-                log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);
+                log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);
                 //sample("jsondumps_after", 1);
                 
                 // Remove quotes
@@ -4222,7 +4222,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid6 = (long int)getpid();
         //sample_memory_usage(my_pid6, "jsonpack_after", ctx); 
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);      
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);      
         //sample("jsonpack_after", 1);
         
         if (endpoint == NULL)
@@ -4239,7 +4239,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid18 = (long int)getpid();
         //sample_memory_usage(my_pid18, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
     }
 
@@ -4251,7 +4251,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid20 = (long int)getpid();
     //sample_memory_usage(my_pid20, "jsoncopy_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsoncopy.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsoncopy.log", &start_t, &end_t, &diff_t);
     //sample("jsoncopy_after", 1);
 
     //sample("jsonobjectset_before", 1);
@@ -4262,7 +4262,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid22 = (long int)getpid();
     //sample_memory_usage(my_pid22, "jsonobjectset_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
     //sample("jsonobjectset_after", 1);
 
     //sample("jsonpack_before", 1);
@@ -4273,7 +4273,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid8 = (long int)getpid();
     //sample_memory_usage(my_pid8, "jsonpack_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
     //sample("jsonpack_after", 1);
     
     if (port == NULL)
@@ -4287,7 +4287,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid24 = (long int)getpid();
     //sample_memory_usage(my_pid24, "jsonobjectset_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
     //sample("jsonobjectset_after", 1);
 
     //sample("jsondecref_before", 1);
@@ -4298,7 +4298,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid26 = (long int)getpid();
     //sample_memory_usage(my_pid26, "jsondecref_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
     //sample("jsondecref_after", 1);
 
     //sample("jsonpack_before", 1);
@@ -4309,7 +4309,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid10 = (long int)getpid();
     //sample_memory_usage(my_pid10, "jsonpack_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
     //sample("jsonpack_after", 1);
 
     if (req_type == NULL)
@@ -4323,7 +4323,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid28 = (long int)getpid();
     //sample_memory_usage(my_pid28, "jsonobjectset_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
     //sample("jsonobjectset_after", 1);
 
     //sample("jsondecref_before", 1);
@@ -4334,7 +4334,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid30 = (long int)getpid();
     //sample_memory_usage(my_pid30, "jsondecref_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
     //sample("jsondecref_after", 1);
 
     if ((domains = json_array()) == NULL)
@@ -4359,7 +4359,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid12 = (long int)getpid();
         //sample_memory_usage(my_pid12, "jsonpack_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
         //sample("jsonpack_after", 1);
         
         if (address == NULL) {
@@ -4375,7 +4375,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid32 = (long int)getpid();
         //sample_memory_usage(my_pid32, "jsonobjectset_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
         //sample("jsonobjectset_after", 1);
 
         //sample("jsondecref_before", 1);
@@ -4386,7 +4386,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid34 = (long int)getpid();
         //sample_memory_usage(my_pid34, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
 
     } else {
@@ -4399,7 +4399,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
             clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
             //long int my_pid14 = (long int)getpid();
             //sample_memory_usage(my_pid14, "jsonpack_after", ctx);
-            log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
+            log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonpack.log", &start_t, &end_t, &diff_t);
             //sample("jsonpack_after", 1);
             if (address == NULL) {
                 free (tmp);
@@ -4416,7 +4416,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
             clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
             //long int my_pid36 = (long int)getpid();
             //sample_memory_usage(my_pid36, "jsondecref_after", ctx);
-            log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+            log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
             //sample("jsondecref_after", 1);
 
             address_name = strtok_r(NULL, ",", &ptr);
@@ -4424,7 +4424,7 @@ send_properties_to_pm(neat_ctx *ctx, neat_flow *flow)
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
         json_object_set(properties, "domain_name", domains);
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectset.log", &start_t, &end_t, &diff_t);
 
 
     }
@@ -4444,7 +4444,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid38 = (long int)getpid();
         //sample_memory_usage(my_pid38, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
     }
     if (endpoints) {
@@ -4456,7 +4456,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid40 = (long int)getpid();
         //sample_memory_usage(my_pid40, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
     }
     if (array) {
@@ -4468,7 +4468,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid42 = (long int)getpid();
         //sample_memory_usage(my_pid42, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
     }
     if (domains) {
@@ -4480,7 +4480,7 @@ end:
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid44 = (long int)getpid();
         //sample_memory_usage(my_pid44, "jsondecref_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsondecref.log", &start_t, &end_t, &diff_t);
         //sample("jsondecref_after", 1);
     }
     if (rc != NEAT_OK)
@@ -4551,13 +4551,13 @@ neat_open(neat_ctx *ctx, neat_flow *flow, const char *name, uint16_t port,
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid2 = (long int)getpid();
         //sample_memory_usage(my_pid2, "jsonobjectget_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);     
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);     
         flow->isMultihoming = 1;
     } else {
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid2 = (long int)getpid();
         //sample_memory_usage(my_pid2, "jsonobjectget_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);        
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);        
         flow->isMultihoming = 0;
     }
 
@@ -4570,13 +4570,13 @@ neat_open(neat_ctx *ctx, neat_flow *flow, const char *name, uint16_t port,
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid4 = (long int)getpid();
         //sample_memory_usage(my_pid4, "jsonobjectget_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
         flow->preserveMessageBoundaries = 1;
     } else {
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid4 = (long int)getpid();
         //sample_memory_usage(my_pid4, "jsonobjectget_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);       
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);       
         flow->preserveMessageBoundaries = 0;
     }
 
@@ -4590,13 +4590,13 @@ neat_open(neat_ctx *ctx, neat_flow *flow, const char *name, uint16_t port,
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid6 = (long int)getpid();
         //sample_memory_usage(my_pid6, "jsonobjectget_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);     
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);     
         flow->security_needed = 1;
     } else {
         clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
         //long int my_pid6 = (long int)getpid();
         //sample_memory_usage(my_pid6, "jsonobjectget_after", ctx);
-        log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);      
+        log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);      
         flow->security_needed = 0;
     }
 
@@ -4607,7 +4607,7 @@ neat_open(neat_ctx *ctx, neat_flow *flow, const char *name, uint16_t port,
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid8 = (long int)getpid();
     //sample_memory_usage(my_pid8, "jsonobjectget_after", ctx);
-    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
+    log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_jsonobjectget.log", &start_t, &end_t, &diff_t);
      
     //json_object_del(flow->properties, "local_ips");
 
@@ -7013,7 +7013,7 @@ neat_new_flow(neat_ctx *ctx)
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid2 = (long int)getpid();
     //sample_memory_usage(my_pid2, "calloc_after", ctx);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
     
     if (flow == NULL) {
@@ -7051,7 +7051,7 @@ neat_new_flow(neat_ctx *ctx)
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid4 = (long int)getpid();
     //sample_memory_usage(my_pid4, "calloc_after", ctx);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
     if (flow->socket == NULL) {
         free(flow);
@@ -7075,7 +7075,7 @@ neat_new_flow(neat_ctx *ctx)
     //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     //long int my_pid6 = (long int)getpid();
     //sample_memory_usage(my_pid6, "calloc_after", ctx);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //log_cpu_time("/root/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
     if (flow->socket->handle == NULL) {
         free(flow->socket);

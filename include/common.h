@@ -144,4 +144,6 @@ extern long total_bytes_sent;
 extern int has_written;
 extern int has_read;
 
+extern int is_client;
+
 #endif
