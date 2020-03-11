@@ -4,7 +4,7 @@
 
 #include <util_new.h>
 #include <unistd.h>
-#include <sample_cpu.c>
+#include <sample_cpu.h>
 #include <common.h>
 
 #include "neat.h"

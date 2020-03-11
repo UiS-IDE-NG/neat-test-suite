@@ -7,7 +7,7 @@
 #ifdef __linux__
 #include <netinet/sctp.h>
 #include <util_new.h>
-#include <sample_cpu.c>
+#include <sample_cpu.h>
 #else // __linux__
 #include <netinet/sctp.h>
 #include <netinet/udplite.h>
