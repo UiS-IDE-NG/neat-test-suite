@@ -250,8 +250,8 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			ssh pi4host2 cd /neat-test-suite/build; killall ./neat_server
 			ssh pi4host3 cd /neat-test-suite/build; killall ./neat_client
 			
-			echo "Add jsondata together and relocate it to a new file..."
-			add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
+			#echo "Add jsondata together and relocate it to a new file..."
+			#add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
 			#calculate_diffs_memory "${directories[k]}" "$((i + 1))"
 		done
 		counter="$((counter+1))"
@@ -263,38 +263,38 @@ delete_empty_files ${directories[0]}
 echo "Calculating the difference in cpu and memory usage..."
 calculate_diffs "${directories[0]}" "start" "afterallconnected" ${files_cpu[0]} ${files_memory[0]}
 
-echo "Calculating the difference in cpu usage for json functions..."
-data_together_in_new_file "${directories[0]}" "jsondumps"
-data_together_in_new_file "${directories[0]}" "jsonpack"
-data_together_in_new_file "${directories[0]}" "jsonloads"
-#data_together_in_new_file "${directories[0]}" "calloc"
-#data_together_in_new_file "${directories[0]}" "getnameinfo"
-data_together_in_new_file "${directories[0]}" "jsondecref"
-data_together_in_new_file "${directories[0]}" "jsonobjectset"
-data_together_in_new_file "${directories[0]}" "jsoncopy"
-data_together_in_new_file "${directories[0]}" "jsonobjectget"
+#echo "Calculating the difference in cpu usage for json functions..."
+# data_together_in_new_file "${directories[0]}" "jsondumps"
+# data_together_in_new_file "${directories[0]}" "jsonpack"
+# data_together_in_new_file "${directories[0]}" "jsonloads"
+# #data_together_in_new_file "${directories[0]}" "calloc"
+# #data_together_in_new_file "${directories[0]}" "getnameinfo"
+# data_together_in_new_file "${directories[0]}" "jsondecref"
+# data_together_in_new_file "${directories[0]}" "jsonobjectset"
+# data_together_in_new_file "${directories[0]}" "jsoncopy"
+# data_together_in_new_file "${directories[0]}" "jsonobjectget"
 
-add_jsonfunctionsdata_together "${directories[0]}" "cpu"
+# add_jsonfunctionsdata_together "${directories[0]}" "cpu"
 #add_jsonfunctionsdata_together "${directories[0]}" "memory"
 
 echo "Procucing the graphs..."
 
 produce_graph ${directories[0]} "cpu" "connection" 0.000001
 produce_graph ${directories[0]} "memory" "connection" 1
-produce_graph ${directories[0]} "cpu" "sampling" 0.000001
+#produce_graph ${directories[0]} "cpu" "sampling" 0.000001
 #produce_graph ${directories[0]} "memory" "sampling" 1
 
-produce_graph ${directories[0]} "cpu" "jsondumps" 0.000001
-produce_graph ${directories[0]} "cpu" "jsonpack" 0.000001
-produce_graph ${directories[0]} "cpu" "jsonloads" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsondumps" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonpack" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonloads" 0.000001
 #produce_graph ${directories[0]} "cpu" "calloc" 0.000001
 #produce_graph ${directories[0]} "cpu" "getnameinfo" 0.000001
-produce_graph ${directories[0]} "cpu" "jsondecref" 0.000001
-produce_graph ${directories[0]} "cpu" "jsonobjectset" 0.000001
-produce_graph ${directories[0]} "cpu" "jsoncopy" 0.000001
-produce_graph ${directories[0]} "cpu" "jsonobjectget" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsondecref" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonobjectset" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsoncopy" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonobjectget" 0.000001
 
-produce_graph ${directories[0]} "cpu" "json" 0.000001
+#produce_graph ${directories[0]} "cpu" "json" 0.000001
 #produce_graph ${directories[0]} "memory" "json" 1
 
 # not working at the moment --> too many arhuments (seems that 10 are the max)? --> remove jsoncopy if needed - lowest cpu usage (may also make a graph where getnameinfo and calloc are not included)
@@ -302,7 +302,7 @@ produce_graph ${directories[0]} "cpu" "json" 0.000001
 # produce_graph_json ${directories[0]} "memory" "connection" 1 "jsondumps" "jsonpack" "jsonloads" "calloc" "getnameinfo" "jsondecref" "jsonobjectset" "jsoncopy"
 
 #produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "json" "sampling"
-produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "json"
+#produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "json"
 #produce_graph_compare ${directories[0]} "memory" "connection" 1 "json"
 
 echo "The script is finished"
