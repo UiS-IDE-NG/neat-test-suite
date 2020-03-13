@@ -3,6 +3,5 @@ build/
 *.png
 *.eps
 *.conf
-*.pdf
 *.log
 *.aux
