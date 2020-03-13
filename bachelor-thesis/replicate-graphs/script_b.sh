@@ -31,7 +31,7 @@ type=("cpu_application" "memory_application")
 when=("start" "afterallconnected")
 files_cpu=("${directories[0]}/cpu_difference_connection.dat" "${directories[1]}/cpu_difference_connection.dat") 
 files_memory=("${directories[0]}/memory_difference_connection.dat" "${directories[1]}/memory_difference_connection.dat")   
-#json_functions=("jsondumps" "jsonpack" "jsonloads" "calloc" "getnameinfo" "jsondecref" "jsonobjectset" "jsoncopy") # "jsonsendonce" "jsonsendoncenoreply"
+json_functions=("jsondumps" "jsonpack" "jsonloads" "jsondecref" "jsonobjectset" "jsoncopy" "jsonobjectget") # "calloc" "getnameinfo"
 
 # may make one calculte_diffs for memory and one for cpu instead of having them in the same function as memory is not always sampled --> pnly really needed if 
 # $1: what directory
@@ -147,7 +147,7 @@ add_results() {
 calculate_diffs_memory() {		
 	for function in "${json_functions[@]}"; do
 		if [[ ! -f ${1}/"${2}_json_memory_${function}" ]]; then
-			> ${1}/"${2}_json_memory_${function}"
+			> ${1}/"${2}_json_memory_${function}.log"
 		fi
 		memory_before=$(find "${1}" -type f -name "json_memory_${function}_before.log")
 		memory_after=$(find "${1}" -type f -name "json_memory_${function}_after.log")
@@ -189,17 +189,18 @@ add_jsondata_in_new_file() {
 
 # $1: directory
 # $2: function 
+# $3: "cpu" or "memory"
 data_together_in_new_file() {
-	> ${1}/"cpu_difference_$2.dat"
+	> ${1}/"$3_difference_$2.dat"
 	
 	for (( i = 1; i <= "${#flows[@]}"; i++ )); do
 		file=$(find "${1}" -type f -name "${i}_*_$2.log")
 		filelength=$(cat ${file} | wc -l)
 		for (( j = 1; j <= ${filelength}; j++ )); do
 			value=$(awk "NR==${j}" ${file})
-			printf "${value} " >> ${1}/"cpu_difference_$2.dat"
+			printf "${value} " >> ${1}/"$3_difference_$2.dat"
 		done
-		printf "\n" >> ${1}/"cpu_difference_$2.dat"
+		printf "\n" >> ${1}/"$3_difference_$2.dat"
 	done
 }
 
@@ -209,7 +210,7 @@ add_jsonfunctionsdata_together() {
 	files=$(find "${1}" -type f -name "$2_difference_*.dat")
 	cpu_time=0
 
-	>> ${1}/"cpu_difference_json.dat"
+	>> ${1}/"$2_difference_json.dat"
 
 	for (( i = 1; i <= "${#flows[@]}"; i++ )); do 	# number of lines
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do

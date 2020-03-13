@@ -31,15 +31,15 @@ files_memory=("${directories[0]}/memory_difference_connection.dat" "${directorie
 # $4: file name (cpu)
 # $5: file name (memory)
 calculate_diffs() {	
-	correct_cpu_file=${SCRIPT_DIR}/"cpu_difference_connection.dat"	# can /should be an argument
+	#correct_cpu_file=${SCRIPT_DIR}/"cpu_difference_connection.dat"	# can /should be an argument
 	for (( i = 1; i <= "${#flows[@]}"; i++ )); do 	
 		cpu_before=$(find "${1}" -type f -name "${i}_${2}_${type[0]}.log")
 		cpu_after=$(find "${1}" -type f -name "${i}_${3}_${type[0]}.log")
 		memory_before=$(find "${1}" -type f -name "${i}_${2}_${type[1]}.log")
 		memory_after=$(find "${1}" -type f -name "${i}_${3}_${type[1]}.log")
 		filelength=$(cat ${1}/${i}_${3}_${type[0]}.log | wc -l)
-		line=$(awk "NR==${i}" ${correct_cpu_file})
-		correct_cpu_values=($line)
+		#line=$(awk "NR==${i}" ${correct_cpu_file})
+		#correct_cpu_values=($line)
 		if [[ ! -z ${cpu_after} ]]; then
 			for (( j = 1; j <= "${filelength}"; j++ )); do
 				index="$((j * 2))"	# to avoid RSS text in the files for memory
@@ -47,18 +47,20 @@ calculate_diffs() {
 				line2=$(awk "NR==${j}" ${cpu_after})
 				line3=$(awk "NR==${index}" ${memory_before})
 				line4=$(awk "NR==${index}" ${memory_after})
-				all_diff="$((line2 - line1))"	
-				cpu_diff="$((all_diff - correct_cpu_values[j-1]))"
+				#all_diff="$((line2 - line1))"	
+				#cpu_diff="$((all_diff - correct_cpu_values[j-1]))"
+				cpu_diff="$((line2 - line1))"
 				memory_diff="$((line4 - line3))"
-				printf "${cpu_diff} " >> "${directories[0]}/cpu_difference_sampling.dat" 
-				printf "${correct_cpu_values[j-1]} " >> "${4}"
+				#printf "${cpu_diff} " >> "${directories[0]}/cpu_difference_sampling.dat" 
+				#printf "${correct_cpu_values[j-1]} " >> "${4}"
+				printf "${cpu_diff} " >> "${4}"
 				printf "${memory_diff} " >> "${5}"	
-				printf "${all_diff} " >> "${directories[0]}/cpu_all_difference.dat" 
+				#printf "${all_diff} " >> "${directories[0]}/cpu_all_difference.dat" 
 			done
 			printf "\n" >> "${4}"
 			printf "\n" >> "${5}"
-			printf "\n" >> "${directories[0]}/cpu_difference_sampling.dat" 
-			printf "\n" >> "${directories[0]}/cpu_all_difference.dat" 
+			#printf "\n" >> "${directories[0]}/cpu_difference_sampling.dat" 
+			#printf "\n" >> "${directories[0]}/cpu_all_difference.dat" 
 		fi
 	done
 }
@@ -222,13 +224,13 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			echo "number of flow(s) ${flows[i]}, test $((j + 1))..."
 			# -R "${directories[k+1]}" -A -s 		"${counter}"
 			#-I "10.0.0.3"
-			ssh ${server} cd /neat-test-suite/build; ./neat_server -C "$((transport[2] * flows[i]))" -a "${a}" -b "${b}" \
+			ssh ${server} cd neat-test-suite/build; ./neat_server -C "$((transport[2] * flows[i]))" -a "${a}" -b "${b}" \
 				-M "${transport[k]}" -p "${port}" -v "${log_level}" \
 				>/dev/null 2>&1 & #&>>/home/helena/Documents/neat-test-suite/build/output_server.txt 2>&1 & #>/dev/null 2>&1 & #
 
 			sleep 1 # not sure if this is necessary
 			# -i "10.0.0.2"
-			ssh ${client} cd /neat-test-suite/build; ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
+			ssh ${client} cd neat-test-suite/build; ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
 				-M "${transport[k]}" -n "${flows[i]}" -v "${log_level}" "${host}" \
 				"${port}" "${counter}" &>/dev/null & #&>>/home/helena/Documents/neat-test-suite/build/output_client.txt & #&>/dev/null & #
 
@@ -275,7 +277,7 @@ calculate_diffs "${directories[0]}" "start" "afterallconnected" ${files_cpu[0]} 
 # data_together_in_new_file "${directories[0]}" "jsonobjectget"
 
 # add_jsonfunctionsdata_together "${directories[0]}" "cpu"
-#add_jsonfunctionsdata_together "${directories[0]}" "memory"
+# add_jsonfunctionsdata_together "${directories[0]}" "memory"
 
 echo "Procucing the graphs..."
 
