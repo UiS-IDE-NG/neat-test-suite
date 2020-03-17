@@ -31,7 +31,7 @@ type=("cpu_application" "memory_application")
 when=("start" "afterallconnected")
 files_cpu=("${directories[0]}/cpu_difference_connection.dat" "${directories[1]}/cpu_difference_connection.dat") 
 files_memory=("${directories[0]}/memory_difference_connection.dat" "${directories[1]}/memory_difference_connection.dat")   
-json_functions=("jsondumps" "jsonpack" "jsonloads" "jsondecref" "jsonobjectset" "jsoncopy" "jsonobjectget") # "calloc" "getnameinfo"
+json_functions=("jsondumps" "jsonpack" "jsonloads" "jsondecref" "jsonobjectset" "jsonobjectget") # "calloc" "getnameinfo" "jsoncopy"
 
 # may make one calculte_diffs for memory and one for cpu instead of having them in the same function as memory is not always sampled --> pnly really needed if 
 # $1: what directory
@@ -152,11 +152,14 @@ calculate_diffs_memory() {
 		memory_before=$(find "${1}" -type f -name "json_memory_${function}_before.log")
 		memory_after=$(find "${1}" -type f -name "json_memory_${function}_after.log")
 		filelength=$(cat ${1}/json_memory_${function}_after.log | wc -l)
-		for (( j = 2; j <= "${filelength}"; j+=2 )); do
-			value_before=$(awk "NR==${j}" ${memory_before})
-			value_after=$(awk "NR==${j}" ${memory_after})
+		for (( m = 2; m <= "${filelength}"; m+=2 )); do
+			value_before=$(awk "NR==${m}" ${memory_before})
+			value_after=$(awk "NR==${m}" ${memory_after})
 			memory_diff="$((memory_diff + value_after - value_before))"
 		done
+		if [[ ${memory_diff} -lt 0 ]]; then # to avoid negative numbers
+			memory_diff=0
+		fi
 		printf "${memory_diff}\n" >> ${1}/"${2}_json_memory_${function}"
 		> ${1}/"json_memory_${function}_before.log"
 		> ${1}/"json_memory_${function}_after.log"
@@ -169,8 +172,6 @@ calculate_diffs_memory() {
 # $2: "how many flows" number
 add_jsondata_in_new_file() {
 	files=$(find "${1}" -type f -name "json_cpu_difference_*.log")
-	#cpu_time=0	
-
 	for file in ${files}; do
 		filename=$(echo ${file:48})
 		if [[ ! -f ${1}/"${2}_${filename}" ]]; then
@@ -215,7 +216,7 @@ add_jsonfunctionsdata_together() {
 	for (( i = 1; i <= "${#flows[@]}"; i++ )); do 	# number of lines
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do
 			for file in ${files}; do
-				if [[ ${file} != "/home/helena/results-neat-test-suite/client/tcp/cpu_difference_connection.dat" && ${file} != "/home/helena/results-neat-test-suite/client/tcp/cpu_difference_sampling.dat" ]]; then
+				if [[ ${file} != "/home/helena/results-neat-test-suite/client/tcp/$2_difference_connection.dat" && ${file} != "/home/helena/results-neat-test-suite/client/tcp/$2_difference_sampling.dat" ]]; then
 					line=$(awk "NR==${i}" ${file})
 					numbers=($line)
 					cpu_time=$((cpu_time + numbers[j]))
@@ -223,7 +224,6 @@ add_jsonfunctionsdata_together() {
 			done
 			printf "${cpu_time} " >> ${1}/"$2_difference_json.dat"
 			cpu_time=0
-			memory=0
 		done
 		printf "\n" >> ${1}/"$2_difference_json.dat"
 	done
@@ -301,18 +301,6 @@ produce_graph_compare() {
 }
 
 
-#pi4router - pi4host2 - pi4host3 - ... pi4host6
-#ssh ${user} # access the client and then run neat server --> need to change the host to the ip address of the host to listen for (the client)
-# do the same for the client --> they will run on each their clients --> since their are more than two clients -- more than one experiment can be run at the same time
-# --> have to change how the script work then
-# if key exchange is not possible or something, can use:
-#	spawn ssh ...
-#	expect "password:"
-#	sleep 1
-#	send "${password}\r"
-#	command
-
-
 echo "This script will calculate the CPU and memory usage"
 
 echo "Executing tests for"
@@ -330,7 +318,7 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 				a="0"
 		fi
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do
-			echo "number of flow(s) ${flows[i]}, test $((j + 1))..."
+			echo "number of flows: ${flows[i]}, test $((j + 1))..."
 			# -R "${directories[k+1]}" -A -s 		"${counter}"
 			./neat_server -C "$((transport[2] * flows[i]))" -a "${a}" -b "${b}" \
 				-M "${transport[k]}" -I "${host}" -p "${port}" -v "${log_level}" \
@@ -344,7 +332,7 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 
 			#wait before the programs are killed 
 			if [[ ${flows[i]} -eq 1 ]]; then
-				sleep 1
+				sleep 5
 			elif [[ ${flows[i]} -eq 2 || ${flows[i]} -eq 4 ]]; then
 				sleep 10
 			elif [[ ${flows[i]} -eq 8 || ${flows[i]} -eq 16 ]]; then
@@ -361,8 +349,8 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			killall ./neat_client
 
 			echo "Add jsondata together and relocate it to a new file..."
-			add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
-			#calculate_diffs_memory "${directories[k]}" "$((i + 1))"
+			#add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
+			calculate_diffs_memory "${directories[k]}" "$((i + 1))"
 
 		done
 		counter="$((counter+1))"
@@ -377,15 +365,20 @@ echo "Calculating the difference in cpu usage for json functions..."
 data_together_in_new_file "${directories[0]}" "jsondumps"
 data_together_in_new_file "${directories[0]}" "jsonpack"
 data_together_in_new_file "${directories[0]}" "jsonloads"
-#data_together_in_new_file "${directories[0]}" "calloc"
-#data_together_in_new_file "${directories[0]}" "getnameinfo"
 data_together_in_new_file "${directories[0]}" "jsondecref"
 data_together_in_new_file "${directories[0]}" "jsonobjectset"
-data_together_in_new_file "${directories[0]}" "jsoncopy"
+#data_together_in_new_file "${directories[0]}" "jsoncopy"
 data_together_in_new_file "${directories[0]}" "jsonobjectget"
 
+data_together_in_new_file "${directories[0]}" "jsondumps" "memory"
+data_together_in_new_file "${directories[0]}" "jsonpack" "memory"
+data_together_in_new_file "${directories[0]}" "jsonloads" "memory"
+data_together_in_new_file "${directories[0]}" "jsondecref" "memory"
+data_together_in_new_file "${directories[0]}" "jsonobjectset" "memory"
+data_together_in_new_file "${directories[0]}" "jsonobjectget" "memory"
+
 add_jsonfunctionsdata_together "${directories[0]}" "cpu"
-# add_jsonfunctionsdata_together "${directories[0]}" "memory"
+add_jsonfunctionsdata_together "${directories[0]}" "memory"
 
 echo "Procucing the graphs..."
 
@@ -396,23 +389,23 @@ produce_graph ${directories[0]} "cpu" "sampling" 0.000001
 produce_graph ${directories[0]} "cpu" "jsondumps" 0.000001
 produce_graph ${directories[0]} "cpu" "jsonpack" 0.000001
 produce_graph ${directories[0]} "cpu" "jsonloads" 0.000001
-#produce_graph ${directories[0]} "cpu" "calloc" 0.000001
-#produce_graph ${directories[0]} "cpu" "getnameinfo" 0.000001
 produce_graph ${directories[0]} "cpu" "jsondecref" 0.000001
 produce_graph ${directories[0]} "cpu" "jsonobjectset" 0.000001
-produce_graph ${directories[0]} "cpu" "jsoncopy" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsoncopy" 0.000001
 produce_graph ${directories[0]} "cpu" "jsonobjectget" 0.000001
 
+produce_graph ${directories[0]} "memory" "jsondumps" 1
+produce_graph ${directories[0]} "memory" "jsonpack" 1
+produce_graph ${directories[0]} "memory" "jsonloads" 1
+produce_graph ${directories[0]} "memory" "jsondecref" 1
+produce_graph ${directories[0]} "memory" "jsonobjectset" 1
+produce_graph ${directories[0]} "memory" "jsonobjectget" 1
+
 produce_graph ${directories[0]} "cpu" "json" 0.000001
-#produce_graph ${directories[0]} "memory" "json" 1
+produce_graph ${directories[0]} "memory" "json" 1
 
-# not working at the moment --> too many arhuments (seems that 10 are the max)? --> remove jsoncopy if needed - lowest cpu usage (may also make a graph where getnameinfo and calloc are not included)
-#produce_graph_json ${directories[0]} "cpu" "connection" 0.000001 "jsondumps" "jsonpack" "jsonloads" "jsondecref" "jsonobjectset" "jsoncopy" "jsonobjectget"
-# produce_graph_json ${directories[0]} "memory" "connection" 1 "jsondumps" "jsonpack" "jsonloads" "calloc" "getnameinfo" "jsondecref" "jsonobjectset" "jsoncopy"
-
-#produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "json" "sampling"
-produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "json"
-#produce_graph_compare ${directories[0]} "memory" "connection" 0.000001 "json"
+produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "sampling" "json"
+produce_graph_compare ${directories[0]} "memory" "connection" 1 "sampling" "json"
 
 echo "The script is finished"
 echo "The results can be found in ${DIRECTORY}"
