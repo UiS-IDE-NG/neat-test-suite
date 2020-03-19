@@ -221,19 +221,21 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 		fi
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do
 			echo "number of flow(s) ${flows[i]}, test $((j + 1))..."
-			# -R "${directories[k+1]}" -A -s 		"${counter}"
-			ssh ${server} cd neat-test-suite/build ; ./neat_server -C "$((transport[k+1] * flows[i]))" -a "${a}" -b "${b}" \
-				-M "${transport[k]}" -I "192.168.10.2" -p "${port}" -v "${log_level}" \
-				>/dev/null 2>&1 & #&>>/root/output_server.txt 2>&1 & 
+			# -R "${directories[k+1]}" -A -s 		"${counter}
+
+			ssh ${server} "cd neat-test-suite/build ; ./neat_server -C $((transport[k+1] * flows[i])) -a ${a} -b ${b} \
+				-M ${transport[k]} -I '192.168.10.2' -p ${port} -v ${log_level}" \
+				&>>/root/output_server.txt 2>&1 & #2>&1 &
 
 			sleep 1 # not sure if this is necessary
-			ssh ${client} cd neat-test-suite/build ; ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
-				-M "${transport[k]}" -i "192.168.10.3" -n "${flows[i]}" -v "${log_level}" "${host}" \
-				"${port}" "${counter}" &>/dev/null & #&>>/root/output_client.txt & 
+
+			ssh ${client} "cd neat-test-suite/build ; ./neat_client -s -R ${directories[k]} -A -C ${flows[i]} -a ${a} -b ${b} \
+				-M ${transport[k]} -i '192.168.10.3' -n ${flows[i]} -v ${log_level} ${host} \
+				${port} ${counter}" &>>/root/output_client.txt & #&
 
 			#wait before the programs are killed 
 			if [[ ${flows[i]} -eq 1 ]]; then
-				sleep 5
+				sleep 1
 			elif [[ ${flows[i]} -eq 2 || ${flows[i]} -eq 4 ]]; then
 				sleep 10
 			elif [[ ${flows[i]} -eq 8 || ${flows[i]} -eq 16 ]]; then
@@ -246,11 +248,11 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 				sleep 10m
 			fi
 
-			ssh pi4host2 cd /neat-test-suite/build ; killall ./neat_server
-			ssh pi4host3 cd /neat-test-suite/build ; killall ./neat_client
+			ssh ${server} "cd neat-test-suite/build ; killall ./neat_server"
+			ssh ${client} "cd neat-test-suite/build ; killall ./neat_client"
 			
 			echo "Add jsondata together and relocate it to a new file..."
-			#add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
+			add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
 			calculate_diffs_memory "${directories[k]}" "$((i + 1))"
 		done
 		counter="$((counter+1))"
@@ -259,52 +261,52 @@ done
 
 delete_empty_files ${directories[0]}
 
-echo "Calculating the difference in cpu and memory usage..."
-calculate_diffs "${directories[0]}" "start" "afterallconnected" ${files_cpu[0]} ${files_memory[0]}
+#echo "Calculating the difference in cpu and memory usage..."
+#calculate_diffs "${directories[0]}" "start" "afterallconnected" ${files_cpu[0]} ${files_memory[0]}
 
-echo "Calculating the difference in cpu usage for json functions..."
-# data_together_in_new_file "${directories[0]}" "jsondumps"
-# data_together_in_new_file "${directories[0]}" "jsonpack"
-# data_together_in_new_file "${directories[0]}" "jsonloads"
-# data_together_in_new_file "${directories[0]}" "jsondecref"
-# data_together_in_new_file "${directories[0]}" "jsonobjectset"
-# data_together_in_new_file "${directories[0]}" "jsonobjectget"
+#echo "Calculating the difference in cpu usage for json functions..."
+#data_together_in_new_file "${directories[0]}" "jsondumps"
+#data_together_in_new_file "${directories[0]}" "jsonpack"
+#data_together_in_new_file "${directories[0]}" "jsonloads"
+#data_together_in_new_file "${directories[0]}" "jsondecref"
+#data_together_in_new_file "${directories[0]}" "jsonobjectset"
+#data_together_in_new_file "${directories[0]}" "jsonobjectget"
 
-data_together_in_new_file "${directories[0]}" "jsondumps" "memory"
-data_together_in_new_file "${directories[0]}" "jsonpack" "memory"
-data_together_in_new_file "${directories[0]}" "jsonloads" "memory"
-data_together_in_new_file "${directories[0]}" "jsondecref" "memory"
-data_together_in_new_file "${directories[0]}" "jsonobjectset" "memory"
-data_together_in_new_file "${directories[0]}" "jsonobjectget" "memory"
+#data_together_in_new_file "${directories[0]}" "jsondumps" "memory"
+#data_together_in_new_file "${directories[0]}" "jsonpack" "memory"
+#data_together_in_new_file "${directories[0]}" "jsonloads" "memory"
+#data_together_in_new_file "${directories[0]}" "jsondecref" "memory"
+#data_together_in_new_file "${directories[0]}" "jsonobjectset" "memory"
+#data_together_in_new_file "${directories[0]}" "jsonobjectget" "memory"
 
 #add_jsonfunctionsdata_together "${directories[0]}" "cpu"
-add_jsonfunctionsdata_together "${directories[0]}" "memory"
+#add_jsonfunctionsdata_together "${directories[0]}" "memory"
 
-echo "Procucing the graphs..."
+#echo "Procucing the graphs..."
 
-produce_graph ${directories[0]} "cpu" "connection" 0.000001
-produce_graph ${directories[0]} "memory" "connection" 1
+#produce_graph ${directories[0]} "cpu" "connection" 0.000001
+#produce_graph ${directories[0]} "memory" "connection" 1
 #produce_graph ${directories[0]} "cpu" "sampling" 0.000001
 
-# produce_graph ${directories[0]} "cpu" "jsondumps" 0.000001
-# produce_graph ${directories[0]} "cpu" "jsonpack" 0.000001
-# produce_graph ${directories[0]} "cpu" "jsonloads" 0.000001
-# produce_graph ${directories[0]} "cpu" "jsondecref" 0.000001
-# produce_graph ${directories[0]} "cpu" "jsonobjectset" 0.000001
-# produce_graph ${directories[0]} "cpu" "jsonobjectget" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsondumps" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonpack" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonloads" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsondecref" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonobjectset" 0.000001
+#produce_graph ${directories[0]} "cpu" "jsonobjectget" 0.000001
 
-produce_graph ${directories[0]} "memory" "jsondumps" 1
-produce_graph ${directories[0]} "memory" "jsonpack" 1
-produce_graph ${directories[0]} "memory" "jsonloads" 1
-produce_graph ${directories[0]} "memory" "jsondecref" 1
-produce_graph ${directories[0]} "memory" "jsonobjectset" 1
-produce_graph ${directories[0]} "memory" "jsonobjectget" 1
+#produce_graph ${directories[0]} "memory" "jsondumps" 1
+#produce_graph ${directories[0]} "memory" "jsonpack" 1
+#produce_graph ${directories[0]} "memory" "jsonloads" 1
+#produce_graph ${directories[0]} "memory" "jsondecref" 1
+#produce_graph ${directories[0]} "memory" "jsonobjectset" 1
+#produce_graph ${directories[0]} "memory" "jsonobjectget" 1
 
 #produce_graph ${directories[0]} "cpu" "json" 0.000001
-produce_graph ${directories[0]} "memory" "json" 1
+#produce_graph ${directories[0]} "memory" "json" 1
 
 #produce_graph_compare ${directories[0]} "cpu" "connection" 0.000001 "sampling" "json"
-produce_graph_compare ${directories[0]} "memory" "connection" 1 "sampling" "json"
+#produce_graph_compare ${directories[0]} "memory" "connection" 1 "sampling" "json"
 
 echo "The script is finished"
-echo "The results can be found in ${DIRECTORY}"
+#echo "The results can be found in ${DIRECTORY}"
