@@ -4,7 +4,7 @@
 
 #include <util_new.h>
 #include <unistd.h>
-#include <sample_cpu.c>
+#include <sample_cpu.h>
 #include <common.h>
 
 #include "neat.h"
@@ -140,47 +140,47 @@ nt_json_send_once(struct neat_ctx *ctx, struct neat_flow *flow, const char *path
     nt_log(ctx, NEAT_LOG_DEBUG, "%s", __func__);
 
     //sample("calloc_before", 1);
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((context = calloc(1, sizeof(*context))) == NULL)
         return NEAT_ERROR_OUT_OF_MEMORY;
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    ////log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
 
     //sample("calloc_before", 1);
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((pm_context = calloc(1, sizeof(*pm_context))) == NULL) {
         rc = NEAT_ERROR_OUT_OF_MEMORY;
         goto error;
     }
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    ////log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
 
     pm_context->timer = NULL;
 
     //sample("jsondumps_before", 1);
     long int my_pid = (long int)getpid();
-    sample_memory_usage((my_pid, "jsondumps_before", ctx);
-    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    sample_memory_usage(my_pid, "jsondumps_before", ctx);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((pm_context->output_buffer = json_dumps(json, JSON_INDENT(2))) == NULL) {
         rc = NEAT_ERROR_OUT_OF_MEMORY;
         goto error;
     }
-    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     long int my_pid2 = (long int)getpid();
-    sample_memory_usage((my_pid2, "jsondumps_after", ctx);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);                
+    sample_memory_usage(my_pid2, "jsondumps_after", ctx);
+    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);                
     //sample("jsondumps_after", 1);
 
     //sample("calloc_before", 1);
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((pm_context->timer = calloc(1, sizeof(*pm_context->timer))) == NULL) {
         rc = NEAT_ERROR_OUT_OF_MEMORY;
         goto error;
     }
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    ////log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
 
     if ((rc = uv_timer_init(ctx->loop, pm_context->timer))) {
@@ -225,47 +225,47 @@ nt_json_send_once_no_reply(struct neat_ctx *ctx, struct neat_flow *flow, const c
     nt_log(ctx, NEAT_LOG_DEBUG, "%s", __func__);
 
     //sample("calloc_before", 1);
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((context = calloc(1, sizeof(*context))) == NULL)
         return NEAT_ERROR_OUT_OF_MEMORY;
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    ////log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
 
     //sample("calloc_before", 1);
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((pm_context = calloc(1, sizeof(*pm_context))) == NULL) {
         rc = NEAT_ERROR_OUT_OF_MEMORY;
         goto error;
     }
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    ////log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
 
     pm_context->timer = NULL;
 
     //sample("jsondumps_before", 1);
     long int my_pid = (long int)getpid();
-    sample_memory_usage((my_pid, "jsondumps_before", ctx);
-    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    sample_memory_usage(my_pid, "jsondumps_before", ctx);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((pm_context->output_buffer = json_dumps(json, JSON_INDENT(2))) == NULL) {
         rc = NEAT_ERROR_OUT_OF_MEMORY;
         goto error;
     }
-    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
     long int my_pid2 = (long int)getpid();
-    sample_memory_usage((my_pid2, "jsondumps_after", ctx);
-    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);                
+    sample_memory_usage(my_pid2, "jsondumps_after", ctx);
+    log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_jsondumps.log", &start_t, &end_t, &diff_t);                
     //sample("jsondumps_after", 1);
 
     //sample("calloc_before", 1);
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_t);
     if ((pm_context->timer = calloc(1, sizeof(*pm_context->timer))) == NULL) {
         rc = NEAT_ERROR_OUT_OF_MEMORY;
         goto error;
     }
-    ////clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
-    ////log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
+    //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_t);
+    //log_cpu_time("/home/helena/results-neat-test-suite/client/tcp/json_cpu_difference_calloc.log", &start_t, &end_t, &diff_t);      
     //sample("calloc_after", 1);
 
     if ((rc = uv_timer_init(ctx->loop, pm_context->timer))) {

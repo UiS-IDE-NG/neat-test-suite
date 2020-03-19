@@ -10,7 +10,7 @@ flows=(1 2 4 8 16 32 64 128 256)
 
 transport=("TCP" "1" "SCTP" "1")
 
-host="127.0.0.1"
+host="192.168.10.2"
 port=8080
 log_level=1	
 counter=1 	# used to differentiate between how many flows there are in each file 
@@ -69,8 +69,8 @@ calculate_diffs() {
 # $2: "how many flows" number
 calculate_diffs_memory() {		
 	for function in "${json_functions[@]}"; do
-		if [[ ! -f ${1}/"${2}_json_memory_${function}" ]]; then
-			> ${1}/"${2}_json_memory_${function}"
+		if [[ ! -f ${1}/"${2}_json_memory_difference_${function}" ]]; then
+			> ${1}/"${2}_json_memory_difference_${function}"
 		fi
 		memory_before=$(find "${1}" -type f -name "json_memory_${function}_before.log")
 		memory_after=$(find "${1}" -type f -name "json_memory_${function}_after.log")
@@ -83,7 +83,7 @@ calculate_diffs_memory() {
 		if [[ ${memory_diff} -lt 0 ]]; then # to avoid negative numbers
 			memory_diff=0
 		fi
-		printf "${memory_diff}\n" >> ${1}/"${2}_json_memory_${function}"
+		printf "${memory_diff}\n" >> ${1}/"${2}_json_memory_difference_${function}"
 		> ${1}/"json_memory_${function}_before.log"
 		> ${1}/"json_memory_${function}_after.log"
 		memory_diff=0
@@ -222,16 +222,14 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do
 			echo "number of flow(s) ${flows[i]}, test $((j + 1))..."
 			# -R "${directories[k+1]}" -A -s 		"${counter}"
-			#-I "10.0.0.3"
-			ssh ${server} cd neat-test-suite/build; ./neat_server -C "$((transport[2] * flows[i]))" -a "${a}" -b "${b}" \
-				-M "${transport[k]}" -p "${port}" -v "${log_level}" \
-				>/dev/null 2>&1 & #&>>/home/helena/Documents/neat-test-suite/build/output_server.txt 2>&1 & #>/dev/null 2>&1 & #
+			ssh ${server} cd neat-test-suite/build ; ./neat_server -C "$((transport[k+1] * flows[i]))" -a "${a}" -b "${b}" \
+				-M "${transport[k]}" -I "192.168.10.2" -p "${port}" -v "${log_level}" \
+				>/dev/null 2>&1 & #&>>/root/output_server.txt 2>&1 & 
 
 			sleep 1 # not sure if this is necessary
-			# -i "10.0.0.2"
-			ssh ${client} cd neat-test-suite/build; ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
-				-M "${transport[k]}" -n "${flows[i]}" -v "${log_level}" "${host}" \
-				"${port}" "${counter}" &>/dev/null & #&>>/home/helena/Documents/neat-test-suite/build/output_client.txt & #&>/dev/null & #
+			ssh ${client} cd neat-test-suite/build ; ./neat_client -R "${directories[k]}" -A -s -C "${flows[i]}" -a "${a}" -b "${b}" \
+				-M "${transport[k]}" -i "192.168.10.3" -n "${flows[i]}" -v "${log_level}" "${host}" \
+				"${port}" "${counter}" &>/dev/null & #&>>/root/output_client.txt & 
 
 			#wait before the programs are killed 
 			if [[ ${flows[i]} -eq 1 ]]; then
@@ -248,8 +246,8 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 				sleep 10m
 			fi
 
-			ssh pi4host2 cd /neat-test-suite/build; killall ./neat_server
-			ssh pi4host3 cd /neat-test-suite/build; killall ./neat_client
+			ssh pi4host2 cd /neat-test-suite/build ; killall ./neat_server
+			ssh pi4host3 cd /neat-test-suite/build ; killall ./neat_client
 			
 			echo "Add jsondata together and relocate it to a new file..."
 			#add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
