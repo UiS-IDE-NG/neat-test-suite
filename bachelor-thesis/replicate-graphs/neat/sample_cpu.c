@@ -31,7 +31,7 @@ void log_cpu_time(char * filename, struct timespec *start_s, struct timespec *en
 }
 
 // can also add a parameter for what directory
-/*void sample_memory_usage(long int my_pid, char* name, struct neat_ctx *nc)
+void sample_memory_usage(long int my_pid, char* name, struct neat_ctx *nc)
 {
     char command_string[1000]; 
     sprintf(command_string, "ps -o rss -p %ld >> /home/helena/results-neat-test-suite/client/tcp/json_memory_%s.log &", my_pid, name);
@@ -44,4 +44,4 @@ void log_cpu_time(char * filename, struct timespec *start_s, struct timespec *en
     }
 
     return;
-}*/
+}

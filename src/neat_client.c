@@ -974,7 +974,7 @@ main(int argc, char *argv[])
 
 	user_log(LOG_LEVEL_DEBUG, "Creating new flow (%d)...\n", i + 1);
 	
-    is_client=1;
+    is_client = 1;
  	if ((flows[i] = neat_new_flow(ctx)) == NULL) {
 	    user_log(LOG_LEVEL_ERROR, "%s: neat_new_flow error\n", __func__);
 	    error = 1;

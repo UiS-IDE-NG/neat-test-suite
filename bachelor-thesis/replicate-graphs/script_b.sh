@@ -1,17 +1,5 @@
 #!/bin/bash
 
-# script to run the tests --> figure 5.4, 5.5, 5.12, 5.13
-# NB!!!!
-# result directory need to be created before for it to work --> this is because the server will run first and the sampling will happen, but the directory will first be created by the client
-# functions like neat_set_property and neat_new_flow and neat_init_ctx are run on both server and client --> may sample to much json data... --> solved by defining a variable to know if client or server
-
-# add checks for error - don't really have any...
-# go through the code and find out when {} and "" and $ is really needed
-# to test: 
-# - server side sampling with and without json sampling (to see how much sampling is from server side functions) --> server will not get afterallconnected so this will not work...
-# - only memory sampling --> did not work --> try again
-# try to start is_client as 1
-
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIRECTORY="/home/helena/results-neat-test-suite"
 directories=("/home/helena/results-neat-test-suite/client/tcp" "/home/helena/results-neat-test-suite/server/tcp") #"/home/helena/results-neat-test-suite/client/sctp" "/home/helena/results-neat-test-suite/server/sctp"
@@ -354,7 +342,7 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			elif [[ ${flows[i]} -eq 32 ]]; then
 				sleep 1m
 			elif [[ ${flows[i]} -eq 64 || ${flows[i]} -eq 128 ]]; then
-				sleep 2m
+				sleep 5m #2m
 			else
 				sleep 10m
 			fi
