@@ -252,8 +252,7 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			ssh ${client} "cd neat-test-suite/build ; killall ./neat_client"
 			
 			echo "Add jsondata together and relocate it to a new file..."
-			add_jsondata_in_new_file "${directories[k]}" "$((i + 1))"
-			calculate_diffs_memory "${directories[k]}" "$((i + 1))"
+			ssh ${client} "cd neat-test-suite/build ; ./add_jsondata.sh "${directories[k]}" "$((i + 1))" 'cpu' 'none'" 
 		done
 		counter="$((counter+1))"
 	done
