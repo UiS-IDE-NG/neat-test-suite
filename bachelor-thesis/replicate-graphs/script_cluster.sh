@@ -222,20 +222,20 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 		for (( j = 0; j < "${number_of_tests}"; j++ )); do
 			echo "number of flow(s) ${flows[i]}, test $((j + 1))..."
 			# -R "${directories[k+1]}" -A -s 		"${counter}
-
+		
 			ssh ${server} "cd neat-test-suite/build ; ./neat_server -C $((transport[k+1] * flows[i])) -a ${a} -b ${b} \
-				-M ${transport[k]} -I '192.168.10.2' -p ${port} -v ${log_level}" \
-				&>>/root/output_server.txt 2>&1 & #2>&1 &
+				-M ${transport[k]} -I '192.168.10.2' -p ${port} -v ${log_level} -u ${log_level} \
+				&>/dev/null 2>&1" & #&>>/root/output_server.txt 2>&1 & #2>&1 &
 
 			sleep 1 # not sure if this is necessary
 
 			ssh ${client} "cd neat-test-suite/build ; ./neat_client -s -R ${directories[k]} -A -C ${flows[i]} -a ${a} -b ${b} \
-				-M ${transport[k]} -i '192.168.10.3' -n ${flows[i]} -v ${log_level} ${host} \
-				${port} ${counter}" &>>/root/output_client.txt & #&
+				-M ${transport[k]} -i '192.168.10.3' -n ${flows[i]} -v ${log_level} -u ${log_level} ${host} \
+				${port} ${counter} &>/dev/null" & #&>>/root/output_client.txt & #&
 
 			#wait before the programs are killed 
 			if [[ ${flows[i]} -eq 1 ]]; then
-				sleep 1
+				sleep 5 #1
 			elif [[ ${flows[i]} -eq 2 || ${flows[i]} -eq 4 ]]; then
 				sleep 10
 			elif [[ ${flows[i]} -eq 8 || ${flows[i]} -eq 16 ]]; then
@@ -243,7 +243,7 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			elif [[ ${flows[i]} -eq 32 ]]; then
 				sleep 1m
 			elif [[ ${flows[i]} -eq 64 || ${flows[i]} -eq 128 ]]; then
-				sleep 2m
+				sleep 5m #2m
 			else
 				sleep 10m
 			fi
@@ -252,7 +252,7 @@ for (( k = 0; k < "${#directories[@]}"; k+=2 )); do 	# tcp and sctp
 			ssh ${client} "cd neat-test-suite/build ; killall ./neat_client"
 			
 			echo "Add jsondata together and relocate it to a new file..."
-			ssh ${client} "cd neat-test-suite/build ; ./add_jsondata.sh "${directories[k]}" "$((i + 1))" 'cpu' 'none'" 
+			ssh ${client} "cd neat-test-suite/build ; ./add_jsondata.sh "${directories[k]}" "$((i + 1))" 'none' 'memory'" 
 		done
 		counter="$((counter+1))"
 	done
