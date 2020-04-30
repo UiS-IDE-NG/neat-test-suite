@@ -108,12 +108,16 @@ extern char output_buffer_before[1000];
 extern json_t *prop_obj_before;
 extern json_t *result_obj_before;
 extern json_t *result_obj_after_set;
-struct properies_for_jsonpack {
-	char interface[1000]; 
-	char ip[1000];	// --> test out lower values than 1000 --> see how much is necessary
-    unsigned int port;
-    int transport;
-    _Bool result;	
+struct properties_send_result_conn {
+	char interface_before[1000]; 
+	char ip_before[1000];	// --> test out lower values than 1000 --> see how much is necessary
+    unsigned int port_before;
+    int transport_before;
+    _Bool result_before;
+    json_t *prop_obj_before;
+    json_t *result_obj_before;	
+    json_t *result_obj_after_set;
+    char output_buffer_before[1000];
 };
 /*struct properies_for_jsonpack {
 	char interface_before[1000]; 
@@ -122,7 +126,7 @@ struct properies_for_jsonpack {
     int transport_before;
     _Bool result_before;	
 };*/
-extern struct properies_for_jsonpack properties_jsonpack;	// send_result_conn_a; (or _array)
+extern struct properies_send_result_conn properties_jsonpack;	// send_result_conn_a; (or _array)
 
 // for send_properties_to_pm and nt_json_send_once
 extern int index_to_replace2;
@@ -148,13 +152,13 @@ struct properties_constant {
 	json_t *req_type_before;
 	json_t *properties_before;
 	_Bool first_flow;
-}
+};
 extern struct properties_constant *prop_const;
 struct properties_send_prop_to_pm2 {
 	json_t *endpoints_before;
 	json_t *properties_after_set;
-	json_t *port_before;
 	json_t *properties_after_set2;
+	json_t *port_before;
 	uint16_t flow_port_before;
 	json_t *domains_before;
 	json_t *address;
@@ -171,10 +175,10 @@ extern struct properties_send_prop_to_pm2 send_prop_array2[10];
 
 // open_resolve
 struct properties_open_resolve {
-	json_t *ip_before;
-	json_t addr_before;
+	char ip_before[1000];
+	json_t *addr_before;
 	json_t *ipvalue_before;
-}
+};
 
 
 //json_t *cache_value(const char *compare_value, struct properties_for_jsonloads values_from_array[], int index);
@@ -187,13 +191,14 @@ struct properties_open_resolve {
 
 //json_t *cache_jsonobjectget(json_t* compare_value, struct neat_set_prop *a);
 
-json_t *cache_jsonloads(const char *compare_value, struct jsonloads_struct *a);
-void init_array(struct jsonloads_struct *a);
-void check_if_full(struct jsonloads_struct *a);
+//void init_array(struct jsonloads_struct *a);
+//void check_if_full(struct jsonloads_struct *a);
 //json_t *cache_jsonloads(const char *compare_value, struct array_prop *a, struct properties_jsonloads *b);
 //void init_array(struct array_prop *a);
 //_Bool check_if_full(struct array_prop *a);
+void free_memory();
 
+json_t *cache_jsonloads(const char *compare_value, struct jsonloads_struct *a);
 json_t *cache_jsonobjectget(json_t* compare_value, struct neat_set_struct *a);
 json_t *cache_jsonobjectset(json_t *compare_value, const char *key, json_t *flow_properties, struct neat_set_struct *a); 
 
@@ -202,7 +207,26 @@ char *cache_jsondumps(json_t *json, size_t flag, struct send_prop_to_pm_struct *
 json_t *cache_jsonpack_two_values(char *compare_value, char *compare_value2, struct send_prop_to_pm_struct *a);
 
 json_t *cache_jsonobjectset2(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a);
-json_t *cache_jsonpack2(uint16_t *compare_value, struct jsonpack_struct *a);
+json_t *cache_jsonpack2(uint16_t compare_value, struct send_prop_to_pm_struct2 *a);
+json_t *cache_jsonobjectset3(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a);
+json_t *cache_jsonpack_simple(struct properties_constant *a);
+json_t *cache_jsonobjectset_simple(json_t *compare_value, const char *key, json_t *properties, struct properties_constant *a);
+json_t *cache_jsonpack3(const char *compare_value, struct send_prop_to_pm_struct2 *a);
+json_t *cache_jsonobjectset4(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a);
+json_t *cache_jsonpack4(char *compare_value, struct send_prop_to_pm_struct2 *a);
+json_t *cache_jsonobjectset5(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a);
+char *cache_jsondumps2(json_t *json, size_t flag, struct send_prop_to_pm_struct2 *a);
+
+json_t *cache_jsonpack_four_values(char *compare_ip, unsigned int compare_port, int compare_transport, _Bool compare_result, struct send_result_conn_struct *a);
+json_t *cache_jsonpack(char *compare_value, struct send_result_conn_struct *a);
+json_t *cache_jsonobjectset6(json_t *compare_value, const char *key, json_t *flow_properties, struct send_result_conn_struct *a);
+char *cache_jsondumps3(json_t *json, size_t flag, struct send_result_conn_struct *a);
+
+json_t *cache_jsonobjectget3(json_t *compare_value, struct open_resolve_struct *a);
+char *cache_jsondumps4(json_t *json, size_t flag, struct open_resolve_struct *a);
+
+_Bool cached_values(json_t *compare_value, struct neat_open_struct *a);
+void *cache_jsonobjectget_many(json_t *value, unsigned int value2, unsigned int value3, unsigned int value4, json_t *value5, struct neat_open_struct *a);
 
 // at the moment variable arguments - can also try 
 /*_Bool cache_first_flow(json_t* json, int index_to_replace, ...);	

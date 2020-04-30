@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "neat.h"
+#include "neat_json_helpers.h"
 #include "json_overhead.h"
 #include "neat_log.h"
 //#include "uthash.h"
@@ -44,7 +45,7 @@ _Bool same_value = false;
 _Bool same_value_jsondumps = false;
 char output_buffer_before[1000];
 
-struct properies_for_jsonpack properties_jsonpack;
+//struct properies_send_result_conn properties_jsonpack;
 //struct properies_for_jsonpack properties_jsonpack[10];
 
 // for send_properties_to_pm and nt_json_send_once
@@ -164,6 +165,20 @@ void check_if_full(struct jsonloads_struct *a) {	// may return true/false instea
 		a->index++; \
 	}
 
+/*
+if (a->first) { \
+	if (a->size == a->used) { \
+		a->size *= 2; \
+		a->array = realloc(a->array, a->size * sizeof(*a->array)); \
+		} \
+	a->used++; \
+	a->index++; \
+	a->first = false; \
+} \
+if (a->last) { \
+	a->last = false; \
+} \
+*/
 
 /*
 will not really work (more like not necessary with how it is defined atm), but just remember that it needs to be freed in the end
@@ -175,6 +190,20 @@ void free_array(struct array_prop *a) {
 	a->used = a->size = 0;
 }
 */
+
+// this function is in nt_free_flow --> test if correct with memory sampling
+// cause aborted messages when run in script so atm commented out
+// also test "normal" (aka no improvements) with memory sampling to see if there is memory leaks then
+// may call it free_memory_of_arrays or free_memory_of_cached_values or just free_cached_values()
+void free_memory() {	// may also need to json_decref struff, will see. 
+	free(neat_open_prop->array);
+	free(jsonloads_prop->array);
+	free(neat_set_prop->array);
+	free(send_result_conn_prop->array);
+	free(send_prop_to_pm_prop->array);
+	free(send_prop_to_pm_prop2->array);
+	free(open_resolve_prop->array);
+}
 
 json_t *cache_jsonloads(const char *compare_value, struct jsonloads_struct *a) {
 	json_t *props_temp;
@@ -260,9 +289,7 @@ json_t *cache_jsonloads(const char *compare_value, struct jsonloads_struct *a) {
 }*/
 
 
-// in neat_set_property at the moment - if general, need to include argument for "value" ++
-// can make it general for what struct, will see
-// also, this will not work at the moment, since init_array and check_if_full will only corresond to one struct (same with struct array_prop) --> can't make union work!
+// for neat_set_property
 json_t *cache_jsonobjectget(json_t* compare_value, struct neat_set_struct *a) {
 	json_t *val_temp;
 
@@ -289,8 +316,7 @@ json_t *cache_jsonobjectget(json_t* compare_value, struct neat_set_struct *a) {
 	return val_temp;
 }
 
-// in neat_set_property at the moment - if general need to do something about when init_array should be cast or not (another flag? can always have to types of first - first in struct and first time
-// for the individual function
+// leaks memory --> think i need to use json_decref on flow->properties somewhere
 json_t *cache_jsonobjectset(json_t *compare_value, const char *key, json_t *flow_properties, struct neat_set_struct *a) {
 	//json_t *flow_properties_temp = NULL;
 
@@ -301,27 +327,27 @@ json_t *cache_jsonobjectset(json_t *compare_value, const char *key, json_t *flow
 			return a->array[a->index_of_same_value].flow_properties_before;
 		}
 	}
-	//if (!a->first_flow) {
+	if (!a->first_flow) {
 		// this should also only be done once per struct (actually the function should be changed to account for this - the last instance should increase it - maybe two indexes? where one is increased
 		// if they are the same and then have some value/flag (boolean value probably) that checks if the other value should be increased too --> basically one of the indexes is used if first flow and
 		// same value and the other if there is no matches)
 		//check_if_full(a);	// should not be here for reasons above
-	//} else {
-	if (a->first_flow) {
+	} else {
 		// jsondecref?
 		a->first_flow = false;	// don't need to initialize the array as it has already been done
 	}
 	json_object_set(flow_properties, key, compare_value);
 	a->array[a->index].flow_properties_before = flow_properties;
-	return flow_properties;	// have an if statement that says if not NULL and then assign flow->properties = return value
+	return flow_properties;
 }
 
-// for send_properties_to_pm  
 // --> to make it easier to use the same functions, name alike values the same? --> they are so very alike!!! only the stuct differentiate them
 // possible alike names: key and value, key_temp ?
 // try and make the structures more alike this way - but at the same time, there will most likely be more than one key and value pair (and sometimes more than one value per key)
 // can always just have each instance in their own structure; can make a structure for each function (probably more depending on how many values each have)
 // let's see what works best
+
+// for send_properties_to_pm  
 json_t *cache_jsonobjectget2(json_t* compare_value, struct send_prop_to_pm_struct *a) {
 	json_t * ipvalue_temp;
 
@@ -412,19 +438,15 @@ json_t *cache_jsonobjectset2(json_t *compare_value, const char *key, json_t *flo
 		// jsondecref?
 		check_if_full(a);	
 	} else {
-		//init_array(a);
-		a->array = malloc(array_initial_size * sizeof(*a->array));	
-		a->used = 0;
-		a->size = array_initial_size;
-		a->index = 0;
-		a->first_flow = false;	// don't need to initialize the array as it has already been done
+		init_array(a);
+		//a->first_flow = false;	// don't need to initialize the array as it has already been done
 	}
 	json_object_set(flow_properties, key, compare_value);
 	a->array[a->index].properties_after_set = flow_properties;
 	return flow_properties;	// have an if statement that says if not NULL and then assign flow->properties = return value
 }
 
-json_t *cache_jsonpack2(uint16_t *compare_value, struct jsonpack_struct *a) {		// this function works for these specific three functions that are used here (overall hard to make specific functions for jsonpack)
+json_t *cache_jsonpack2(uint16_t compare_value, struct send_prop_to_pm_struct2 *a) {
 	json_t *value_temp;
 
 	if (!a->first_flow) {
@@ -438,20 +460,19 @@ json_t *cache_jsonpack2(uint16_t *compare_value, struct jsonpack_struct *a) {		/
 		}
 	}
 	if (!a->first_flow) {
-		// is json_decref needed?
+		// json_decref()
 		check_if_full(a);
 	} else {
 		init_array(a);
 		a->first_flow = false;	// only for the last "function"/ instance that will use it
 	}
-	value_temp = json_pack("{s:[{s:{ss}}],s:b}",
-    "match", "interface", "value", compare_value, "link", true);	
-	a->array[a->index].key = compare_value;
-	a->array[a->index].value = value_temp;				
+	value_temp = json_pack("{s:[{s:{ss}}],s:b}", "match", "interface", "value", compare_value, "link", true);	
+	a->array[a->index].flow_port_before = compare_value;
+	a->array[a->index].port_before = value_temp;				
 	return value_temp;
 }
 
-json_t *cache_jsonobjectset3(json_t *compare_value, const char *key, json_t *flow_properties, struct neat_set_struct *a) {
+json_t *cache_jsonobjectset3(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a) {
 	//json_t *flow_properties_temp = NULL;
 
 	if (!a->first_flow) {
@@ -461,10 +482,9 @@ json_t *cache_jsonobjectset3(json_t *compare_value, const char *key, json_t *flo
 			return a->array[a->index_of_same_value].properties_after_set2;
 		}
 	}
-	//if (!a->first_flow) {
+	if (!a->first_flow) {
 		//check_if_full(a);	// should not be here for reasons above
-	//} else {
-	if (a->first_flow) {
+	} else {
 		// jsondecref?
 		a->first_flow = false;	// don't need to initialize the array as it has already been done
 	}
@@ -474,16 +494,16 @@ json_t *cache_jsonobjectset3(json_t *compare_value, const char *key, json_t *flo
 }
 
 json_t *cache_jsonpack_simple(struct properties_constant *a) {	// to make it general add the values that need to be added (maybe in the form of a struct with all the needed alternatives?)
-	json_t *value_temp;
+	json_t *req_type_temp;
 
 	if (!a->first_flow) {
-		value_temp = a->req_type_before;
+		req_type_temp = a->req_type_before;
 	} else {
-		a->first_flow = false;
-		value_temp = json_pack("{s:s}", "value", "pre-resolve");
-		a->req_type_before = value_temp;
+		a->first_flow = false;	// should not be here, but this works (jsonobjectset leaks memory though) --> check why in jsonobject simple
+		req_type_temp = json_pack("{s:s}", "value", "pre-resolve");
+		a->req_type_before = req_type_temp;
 	}
-	return value_temp;
+	return req_type_temp;
 }
 
 json_t *cache_jsonobjectset_simple(json_t *compare_value, const char *key, json_t *properties, struct properties_constant *a) {
@@ -494,9 +514,10 @@ json_t *cache_jsonobjectset_simple(json_t *compare_value, const char *key, json_
 	} else {
 		properties = a->properties_before;
 	}
+	return properties;
 }
 
-json_t *cache_jsonpack3(char *compare_value, struct send_prop_to_pm_struct2 *a) {		// can work for two instances
+json_t *cache_jsonpack3(const char *compare_value, struct send_prop_to_pm_struct2 *a) {		// can work for two instances
 	json_t *address_temp;
 
 	if (!a->first_flow) {
@@ -513,8 +534,8 @@ json_t *cache_jsonpack3(char *compare_value, struct send_prop_to_pm_struct2 *a) 
 		// json_decref();
 		check_if_full(a);
 	} else {
-		//init_array(a);
-		a->first_flow = false;	// only for the last "function"/ instance that will use it
+		init_array(a);
+		//a->first_flow = false;	// only for the last "function"/ instance that will use it
 	}
 	address_temp = json_pack("{sssi}", "value", compare_value, "precedence", 2);	
 	strcpy(a->array[a->index].flow_name_before, compare_value);	
@@ -522,19 +543,18 @@ json_t *cache_jsonpack3(char *compare_value, struct send_prop_to_pm_struct2 *a) 
 	return address_temp;
 }
 
-json_t *cache_jsonobjectset4(json_t *compare_value, const char *key, json_t *flow_properties, struct neat_set_struct *a) {
+json_t *cache_jsonobjectset4(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a) {
 	if (!a->first_flow) {
 		if (a->same_value) {
 			//flow_properties_temp = a->array[index_of_same_value].flow_properties_before;	// can just return, no ned to assign too
-			a->same_value = false;
+			//a->same_value = false; don't set it to false since it will be true again for json_dumps
 			return a->array[a->index_of_same_value].properties_before;
 		}
 	}
-	//if (!a->first_flow) {
-		//check_if_full(a);	// should not be here for reasons above -- but need to increase the index (or not really as it should have been done earlier, but at the same time)
-	//} else {
-	if (a->first_flow) {
+	if (!a->first_flow) {
 		// jsondecref?
+		//check_if_full(a);	// should not be here for reasons above -- but need to increase the index (or not really as it should have been done earlier, but at the same time)
+	} else {
 		a->first_flow = false;	// don't need to initialize the array as it has already been done
 	}
 	json_object_set(flow_properties, key, compare_value);
@@ -549,8 +569,6 @@ json_t *cache_jsonpack4(char *compare_value, struct send_prop_to_pm_struct2 *a) 
 		for (unsigned i = 0; i < a->size; ++i) {
 			if (strcmp(a->array[i].address_name_before, compare_value) == 0) { 
 				address_temp = a->array[i].address_before2;
-				//a->same_value = true;
-				//a->index_of_same_value = i;
 				return address_temp;
 			}
 		}
@@ -559,7 +577,7 @@ json_t *cache_jsonpack4(char *compare_value, struct send_prop_to_pm_struct2 *a) 
 		// json_decref();
 		check_if_full(a);
 	} else {
-		//init_array(a);
+		init_array(a);
 		a->first_flow = false;	// only for the last "function"/ instance that will use it
 	}
 	address_temp = json_pack("{sssi}", "value", compare_value, "precedence", 2);	
@@ -568,19 +586,21 @@ json_t *cache_jsonpack4(char *compare_value, struct send_prop_to_pm_struct2 *a) 
 	return address_temp;
 }
 
-json_t *cache_jsonobjectset5(json_t *compare_value, const char *key, json_t *flow_properties, struct jsonobjectset_struct *a) {
+json_t *cache_jsonobjectset5(json_t *compare_value, const char *key, json_t *flow_properties, struct send_prop_to_pm_struct2 *a) {
 	if (!a->first_flow) {
 		for (unsigned i = 0; i < a->size; ++i) {
-			if (json_equal(a->array[i].domains_before, compare_value)) {
+			if (a->array[i].domains_before == compare_value) {	// json_equal(a->array[i].domains_before, compare_value)
+				a->same_value = true;
+				a->index_of_same_value = i;
 				return  a->array[i].properties_before2;
 			}
 		}
 	}
 	if (!a->first_flow) {
-		check_if_full(a);	
-	} else {
 		// jsondecref?
-		init_array(a);
+		//check_if_full(a);	
+	} else {
+		//init_array(a);
 		a->first_flow = false;	// don't need to initialize the array as it has already been done
 	}
 	json_object_set(flow_properties, key, compare_value);
@@ -592,16 +612,15 @@ json_t *cache_jsonobjectset5(json_t *compare_value, const char *key, json_t *flo
 char *cache_jsondumps2(json_t *json, size_t flag, struct send_prop_to_pm_struct2 *a) {
 	char *output_buffer_temp;
 
-	/*if (a->first_flow) {
+	if (a->first_flow) {
 		//init_array(a);	// only if first in struct
 		a->first_flow = false; // this can be inside init_array (maybe, depends on how the structures are set)
-	} else {*/
-	if (!a->first_flow) {
+	} else {
 		if (a->same_value) {	// may be inside the struct instead (probably call just call it "same" or "same_value")
 			a->same_value = false;
 			return a->array[a->index_of_same_value].output_buffer_before; // index_of_same_value may be inside struct
 		} else {
-			check_if_full(a);
+			//check_if_full(a);
 		}
 	}
 	output_buffer_temp = json_dumps(json, flag);
@@ -611,39 +630,37 @@ char *cache_jsondumps2(json_t *json, size_t flag, struct send_prop_to_pm_struct2
 }
 
 
-
-
 // for send_result_connection
 json_t *cache_jsonpack_four_values(char *compare_ip, unsigned int compare_port, int compare_transport, _Bool compare_result, struct send_result_conn_struct *a) {
-	json_t *props_obj_temp;
+	json_t *prop_obj_temp;
 
 	if (!a->first_flow) {
 		for (unsigned i = 0; i < a->size; ++i) {	
 			if (a->array[i].transport_before == compare_transport && a->array[i].port_before == compare_port && strcmp(compare_ip, a->array[i].ip_before) == 0 && a->array[i].result_before == compare_result) {	 
-				props_obj_temp = a->array[i].props_obj_before;	// don't need to assign, can just return						
-				return props_obj_temp;												
+				prop_obj_temp = a->array[i].prop_obj_before;	// don't need to assign, can just return						
+				return prop_obj_temp;												
 			}	
 		}
 	}
 	if (!a->first_flow) {
-		json_decref(a->array[a->index].props_obj_before);
+		json_decref(a->array[a->index].prop_obj_before);
 		check_if_full(a);
 	} else {
 		init_array(a);
-		a->first_flow = false;	// only for the last "function"/ instance that will use it
+		//a->first_flow = false;	// only for the last "function"/ instance that will use it
 	}
-	props_obj_temp = json_pack("{s:{s:s},s:{s:s},s:{s:i},s:{s:b,s:i},s:{s:b}}",
-        "transport", "value", compare_transport,
+	prop_obj_temp = json_pack("{s:{s:s},s:{s:s},s:{s:i},s:{s:b,s:i},s:{s:b}}",
+        "transport", "value", stack_to_string(compare_transport ),
         "remote_ip", "value", compare_ip,
         "port", "value", compare_port,
         "__he_candidate_success", "value", compare_result, "score", compare_result?5:-5,
         "__cached", "value", 1);
-	a->array[a->index].props_obj_before = props_obj_temp;
+	a->array[a->index].prop_obj_before = prop_obj_temp;
 	a->array[a->index].transport_before = compare_transport;
 	a->array[a->index].port_before = compare_port;
 	strcpy(a->array[a->index].ip_before, compare_ip);
 	a->array[a->index].result_before = compare_result;
-	return props_obj_temp;
+	return prop_obj_temp;
 }
 
 json_t *cache_jsonpack(char *compare_value, struct send_result_conn_struct *a) {
@@ -664,7 +681,7 @@ json_t *cache_jsonpack(char *compare_value, struct send_result_conn_struct *a) {
 		//check_if_full(a);	
 	} else {
 		//init_array(a);
-		a->first_flow = false;	// only for the last "function"/ instance that will use it
+		//a->first_flow = false;	// only for the last "function"/ instance that will use it
 	}
 	result_obj_temp = json_pack("{s:[{s:{ss}}],s:b}",
     "match", "interface", "value", compare_value, "link", true);
@@ -673,42 +690,44 @@ json_t *cache_jsonpack(char *compare_value, struct send_result_conn_struct *a) {
 	return result_obj_temp;
 }
 
-json_t *cache_jsonobjectset(char *compare_value, struct send_result_conn_struct *a, char *key) {
-	json_t * flow_properties_temp;
+json_t *cache_jsonobjectset6(json_t *compare_value, const char *key, json_t *flow_properties, struct send_result_conn_struct *a) {
+	json_t * flow_properties_temp = NULL;
 
 	if (!a->first_flow) {
 		if (same) {
-			flow_properties_temp = a->array[index_of_same_value].flow_properties_before;	// can just return, no ned to assign too
-			return flow_properties_temp;
+			//flow_properties_temp = a->array[index_of_same_value].flow_properties_before;	// can just return, no ned to assign too
+			return a->array[index_of_same_value].result_obj_after_set;
 		}
 	}
 	if (!a->first_flow) {
 		// this should also only be done once per struct (actually the function should be changed to account for this - the last instance should increase it - maybe two indexes? where one is increased
 		// if they are the same and then have some value/flag (boolean value probably) that checks if the other value should be increased too --> basically one of the indexes is used if first flow and
 		// same value and the other if there is no matches)
-		check_if_full(a);	
+		//check_if_full(a);	// really need to update this
 	} else {
 		// jsondecref?
-		a->first_flow = false;	// don't need to initialize the array as it has already been done
+		//a->first_flow = false;	// don't need to initialize the array as it has already been done
 	}
-	json_object_set(flow_properties, key, compare_value);
-	a->array[a->index].flow_properties_before = flow_properties;
-	return flow_properties_temp;	// have an if statement that says if not NULL and then assign flow->properties = return value
+	if (json_object_set(flow_properties, key, compare_value) == -1) {
+		return flow_properties_temp; 	// is NULL
+	}
+	a->array[a->index].result_obj_after_set = flow_properties;
+	return flow_properties;	// have an if statement that says if not NULL and then assign flow->properties = return value
 }
 
 char *cache_jsondumps3(json_t *json, size_t flag, struct send_result_conn_struct *a) {
 	char *output_buffer_temp;
 
-	/*if (a->first_flow) {
+	if (a->first_flow) {
 		//init_array(a);	// only if first in struct
 		a->first_flow = false; // this can be inside init_array (maybe, depends on how the structures are set)
-	} else {*/
-	if (!a->first_flow) {
+	} else {
+	//if (!a->first_flow) {
 		if (a->same_value) {	// may be inside the struct instead (probably call just call it "same" or "same_value")
 			a->same_value = false;
 			return a->array[a->index_of_same_value].output_buffer_before; // index_of_same_value may be inside struct
 		} else {
-			check_if_full(a);
+			//check_if_full(a);
 		}
 	}
 	output_buffer_temp = json_dumps(json, flag);
@@ -719,12 +738,12 @@ char *cache_jsondumps3(json_t *json, size_t flag, struct send_result_conn_struct
 
 
 // open_resolve
-json_t *cache_jsonobjectget3(json_t* compare_value, struct open_resolve_struct *a) {
+json_t *cache_jsonobjectget3(json_t *compare_value, struct open_resolve_struct *a) {
 	json_t *val_temp;
 
 	if (!a->first_flow) {
 		for (unsigned i = 0; i < a->size; ++i) {
-			if (json_equal(a->array[i].addr_before, compare_value)) { // a->array[i].prop_before == compare_value
+			if (a->array[i].addr_before == compare_value) { // a->array[i].addr_before == compare_value json_equal(a->array[i].addr_before, compare_value)
 				val_temp = a->array[i].ipvalue_before;
 				a->same_value = true;				// these are general values, 
 				a->index_of_same_value = i;	// if needed more, add them to the structure
@@ -737,7 +756,7 @@ json_t *cache_jsonobjectget3(json_t* compare_value, struct open_resolve_struct *
 		check_if_full(a);
 	} else {
 		init_array(a);
-		a->first_flow = false;	// only for the last "function"/ instance that will use it
+		//a->first_flow = false;	// only for the last "function"/ instance that will use it
 	}
 	val_temp = json_object_get(compare_value, "value");		// possible to make this a function on its own, butt i'm not sure if i can make it general without them being in the same structure
 	a->array[a->index].ipvalue_before = val_temp;				// need to put the values in the struct into the structure in that case, which means the all need to store the same type of values
@@ -745,14 +764,14 @@ json_t *cache_jsonobjectget3(json_t* compare_value, struct open_resolve_struct *
 	return val_temp;
 }
 
-char *cache_jsondumps(json_t *json, size_t flag, struct send_prop_to_pm_struct *a) {
+char *cache_jsondumps4(json_t *json, size_t flag, struct open_resolve_struct *a) {
 	char *output_buffer_temp;
 
-	/*if (a->first_flow) {
+	if (a->first_flow) {
 		//init_array(a);	// only if first in struct
 		a->first_flow = false; // this can be inside init_array (maybe, depends on how the structures are set)
-	} else {*/
-	if (!a->first_flow) {
+	} else {
+	//if (!a->first_flow) {
 		if (a->same_value) {	// may be inside the struct instead (probably call just call it "same" or "same_value")
 			a->same_value = false;
 			return a->array[a->index_of_same_value].ip_before; // index_of_same_value may be inside struct
@@ -765,3 +784,36 @@ char *cache_jsondumps(json_t *json, size_t flag, struct send_prop_to_pm_struct *
 	free(output_buffer_temp);
 	return a->array[a->index].ip_before;
 }
+
+
+// neat_open - doesn't really decrease the cpu usage (more like increase it) --> try without functions (do it directly like before)
+_Bool cached_values(json_t *compare_value, struct neat_open_struct *a) {
+	if (!a->first_flow) {
+		for (unsigned i = 0; i < a->size; ++i) {
+			if (json_equal(a->array[i].flow_properties_before, compare_value)) {	// a->array[i].flow_properties_before == compare_value json_equal(a->array[i].flow_properties_before, compare_value)
+				return true;
+			}
+		}
+	} else {
+		init_array(a);
+		//a->first_flow = false;
+	}
+	return false;
+}
+
+void *cache_jsonobjectget_many(json_t *value, unsigned int value2, unsigned int value3, unsigned int value4, json_t *value5, struct neat_open_struct *a) {
+	if (!a->first_flow) {
+		check_if_full(a);
+	} else {
+		a->first_flow = false;
+	}
+	a->array[a->index].flow_properties_before = value;
+	a->array[a->index].flow_ismultihoming = value2;
+	a->array[a->index].flow_preserveMessageBoundaries = value3;
+	a->array[a->index].flow_security_needed = value4;
+	a->array[a->index].flow_user_ips = value5;
+	return 0;
+}
+
+
+
