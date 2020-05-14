@@ -2,10 +2,9 @@
 
 DIRECTORY=$1
 number_of_flows=$2
-sample_cpu=$3
-sample_memory=$4
+sampling=$3
 
-json_functions=("jsondumps" "jsonpack" "jsonloads" "jsondecref" "jsonobjectset" "jsonobjectget")
+json_functions=("jsondumps" "jsonpack" "jsonloads" "jsondecref")
 
 add_jsondata_in_new_file() {
 	files=$(find "${1}" -type f -name "json_cpu_difference_*.log")
@@ -27,8 +26,8 @@ add_jsondata_in_new_file() {
 
 calculate_diffs_memory() {
 	for function in "${json_functions[@]}"; do
-		if [[ ! -f ${1}/"${2}_json_memory_difference_${function}" ]]; then
-			> ${1}/"${2}_json_memory_difference_${function}"
+		if [[ ! -f ${1}/"${2}_json_memory_difference_${function}.log" ]]; then
+			> ${1}/"${2}_json_memory_difference_${function}.log"
 		fi
 		memory_before=$(find "${1}" -type f -name "json_memory_${function}_before.log")
 		memory_after=$(find "${1}" -type f -name "json_memory_${function}_after.log")
@@ -41,7 +40,7 @@ calculate_diffs_memory() {
 		if [[ ${memory_diff} -lt 0 ]]; then # to avoid negative numbers
 			memory_diff=0
 		fi
-		printf "${memory_diff}\n" >> ${1}/"${2}_json_memory_difference_${function}"
+		printf "${memory_diff}\n" >> ${1}/"${2}_json_memory_difference_${function}.log"
 		> ${1}/"json_memory_${function}_before.log"
 		> ${1}/"json_memory_${function}_after.log"
 		memory_diff=0
@@ -49,10 +48,10 @@ calculate_diffs_memory() {
 }
 
 # can replace $1 and $2 in the functions with ${DIRECTORY} and ${number_of_flows} directly
-if [[ ${sample_cpu} == "cpu" ]]; then
+if [[ ${sampling} == "cpu" ]]; then
 	add_jsondata_in_new_file ${DIRECTORY} ${number_of_flows}
 fi
 
-if [[ ${sample_memory} == "memory" ]]; then
+if [[ ${sampling} == "memory" ]]; then
 	calculate_diffs_memory ${DIRECTORY} ${number_of_flows}
 fi
