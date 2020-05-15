@@ -47,7 +47,6 @@ calculate_diffs_memory() {
 	done
 }
 
-# can replace $1 and $2 in the functions with ${DIRECTORY} and ${number_of_flows} directly
 if [[ ${sampling} == "cpu" ]]; then
 	add_jsondata_in_new_file ${DIRECTORY} ${number_of_flows}
 fi
